@@ -38,6 +38,14 @@ type PriceSop = {
   icon: string
 }
 
+type ScenePreview = {
+  title: string
+  desc: string
+  items: string[]
+  output: string
+  cta: string
+}
+
 const risks: DailyItem[] = [
   { title: '比价跟价待确认', desc: '5 个 SKU 站内外价差异常', badge: '待确认', icon: '🏷️', tone: 'red' },
   { title: '供货报价待议价', desc: '3 条新报价等待核价', badge: '待议价', icon: '📋', tone: 'orange' },
@@ -153,6 +161,37 @@ const priceSops: PriceSop[] = [
   },
 ]
 
+const scenePreviews: Record<string, ScenePreview> = {
+  product: {
+    title: '商品巡检待办',
+    desc: '聚合商品详情、价格、库存与资质页的全埋点行为，生成今天需要采销确认的商品巡检清单。',
+    items: ['核对实时价格星级与站内价', '检查低库存与库存异常商品', '标记资质、标题、主图待维护商品'],
+    output: '商品巡检清单',
+    cta: 'AI 生成商品巡检清单',
+  },
+  supplier: {
+    title: '供应商报价待办',
+    desc: '整理供货报价、历史议价记录和采购需求，把可议价项沉淀成待确认草稿。',
+    items: ['汇总新报价与历史供价差异', '识别可压价或需补充来源的报价', '生成议价话术和确认字段'],
+    output: '供应商报价议价清单',
+    cta: 'AI 生成报价议价清单',
+  },
+  marketing: {
+    title: '营销券促待办',
+    desc: '根据促销查询、优惠券创建和商品活动配置行为，生成可复用的券促配置草稿。',
+    items: ['识别可创建常规优惠券商品', '复用历史券模板和活动门槛', '生成券促配置草稿并等待确认'],
+    output: '券促配置草稿',
+    cta: 'AI 生成券促配置草稿',
+  },
+  purchase: {
+    title: '采购建单待办',
+    desc: '基于销量预测、库存预定和采购单草稿行为，预填需要采销确认的建单信息。',
+    items: ['识别需补货 SKU 与建议采购量', '预填供应商、仓库和到货批次', '标记预算、库存和交付风险'],
+    output: '采购建单草稿',
+    cta: 'AI 生成采购建单草稿',
+  },
+}
+
 function App() {
   const [path, setPath] = useState(() => window.location.pathname)
   const [toast, setToast] = useState('')
@@ -206,6 +245,7 @@ function App() {
           executeAll={executeAll}
           executeSop={executeSop}
           navigate={navigate}
+          notify={notify}
           running={running}
         />
       ) : (
@@ -310,15 +350,31 @@ function DailyExecution({
   executeAll,
   executeSop,
   navigate,
+  notify,
   running,
 }: {
   completed: string[]
   executeAll: () => void
   executeSop: (sop: PriceSop) => void
   navigate: (path: string) => void
+  notify: (message: string) => void
   running: string | null
 }) {
+  const [selectedSceneKey, setSelectedSceneKey] = useState('price')
   const totalSaved = useMemo(() => priceSops.reduce((sum, item) => sum + item.saved, 0), [])
+  const selectedScene = scenes.find((scene) => scene.key === selectedSceneKey) ?? scenes[1]
+  const selectedPreview = scenePreviews[selectedSceneKey]
+  const isPriceScene = selectedSceneKey === 'price'
+
+  const selectScene = (scene: Scene) => {
+    setSelectedSceneKey(scene.key)
+    notify(`已切换到「${scene.title}」场景`)
+  }
+
+  const runScenePreview = () => {
+    if (!selectedPreview) return
+    notify(`已生成：${selectedPreview.output}`)
+  }
 
   return (
     <div className="execution-page">
@@ -352,39 +408,60 @@ function DailyExecution({
             <section className="panel sop-panel">
               <div className="panel-head split">
                 <div>
-                  <h2>价格场景 SOP</h2>
-                  <p>把采销每天高频的核价、维护竞对价、生成调价草稿拆成 3 条可执行 SOP</p>
+                  <h2>{selectedScene.title}场景{isPriceScene ? ' SOP' : '待办'}</h2>
+                  <p>{isPriceScene ? '把采销每天高频的核价、维护竞对价、生成调价草稿拆成 3 条可执行 SOP' : selectedScene.summary}</p>
                 </div>
-                <button className="primary" type="button" onClick={executeAll} disabled={running !== null || completed.length === priceSops.length}>
-                  {completed.length === priceSops.length ? '全部已完成' : running === 'all' ? '执行中...' : '一键执行全部 SOP'} ✦
+                <button
+                  className="primary"
+                  type="button"
+                  onClick={isPriceScene ? executeAll : runScenePreview}
+                  disabled={isPriceScene ? running !== null || completed.length === priceSops.length : false}
+                >
+                  {isPriceScene
+                    ? completed.length === priceSops.length ? '全部已完成' : running === 'all' ? '执行中...' : '一键执行全部 SOP'
+                    : selectedPreview?.cta ?? 'AI 生成场景清单'} ✦
                 </button>
               </div>
 
               <div className="scene-tabs">
                 {scenes.map((scene) => (
-                  <article className={`scene-card ${scene.key === 'price' ? 'active' : ''}`} key={scene.key}>
+                  <button
+                    aria-pressed={scene.key === selectedSceneKey}
+                    className={`scene-card ${scene.key === selectedSceneKey ? 'active' : ''}`}
+                    key={scene.key}
+                    onClick={() => selectScene(scene)}
+                    type="button"
+                  >
                     <span className={`scene-icon tone-${scene.tone}`}>{scene.icon}</span>
                     <strong>{scene.title}</strong>
                     <p>{scene.desc}</p>
                     <small>{scene.summary}</small>
                     <span className="scene-meta">{scene.meta}</span>
                     <em>{scene.status}</em>
-                  </article>
+                  </button>
                 ))}
               </div>
 
-              <div className="sop-stack">
-                {priceSops.map((sop, index) => (
-                  <SopCard
-                    completed={completed.includes(sop.id)}
-                    index={index + 1}
-                    key={sop.id}
-                    running={running === sop.id || running === 'all'}
-                    sop={sop}
-                    onExecute={() => executeSop(sop)}
-                  />
-                ))}
-              </div>
+              {isPriceScene ? (
+                <div className="sop-stack">
+                  {priceSops.map((sop, index) => (
+                    <SopCard
+                      completed={completed.includes(sop.id)}
+                      index={index + 1}
+                      key={sop.id}
+                      running={running === sop.id || running === 'all'}
+                      sop={sop}
+                      onExecute={() => executeSop(sop)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <ScenePreviewCard
+                  preview={selectedPreview}
+                  scene={selectedScene}
+                  onRun={runScenePreview}
+                />
+              )}
             </section>
           </div>
 
@@ -416,6 +493,36 @@ function DailyExecution({
         </section>
       </main>
     </div>
+  )
+}
+
+function ScenePreviewCard({ onRun, preview, scene }: { onRun: () => void; preview: ScenePreview; scene: Scene }) {
+  return (
+    <article className="scene-preview-card">
+      <header>
+        <span className={`scene-icon tone-${scene.tone}`}>{scene.icon}</span>
+        <div>
+          <h3>{preview.title}</h3>
+          <p>{preview.desc}</p>
+        </div>
+        <em>{scene.status}</em>
+      </header>
+
+      <div className="scene-preview-steps">
+        {preview.items.map((item, index) => (
+          <section key={item}>
+            <span>{index + 1}</span>
+            <p>{item}</p>
+          </section>
+        ))}
+      </div>
+
+      <footer>
+        <strong>产出：{preview.output}</strong>
+        <span>默认生成草稿/清单，提交前仍需采销确认</span>
+        <button className="sop-action" type="button" onClick={onRun}>{preview.cta}</button>
+      </footer>
+    </article>
   )
 }
 
