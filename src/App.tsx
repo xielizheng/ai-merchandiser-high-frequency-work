@@ -46,6 +46,33 @@ type ScenePreview = {
   cta: string
 }
 
+type RequirementField = {
+  id: string
+  label: string
+  badge?: string
+  mode: 'multi' | 'single' | 'select'
+  options: string[]
+  selected: string[]
+  placeholder?: string
+  columns?: 2 | 3
+  required?: boolean
+}
+
+type RequirementOperation = {
+  type: '查询' | '新增' | '修改' | '删除' | '执行'
+  title: string
+  desc: string
+}
+
+type TaskRequirement = {
+  title: string
+  desc: string
+  fields: RequirementField[]
+  operations: RequirementOperation[]
+  note: string
+  submitText: string
+}
+
 const risks: DailyItem[] = [
   { title: '比价跟价待确认', desc: '5 个 SKU 站内外价差异常', badge: '待确认', icon: '🏷️', tone: 'red' },
   { title: '供货报价待议价', desc: '3 条新报价等待核价', badge: '待议价', icon: '📋', tone: 'orange' },
@@ -123,8 +150,8 @@ const priceSops: PriceSop[] = [
     subtitle: '先发现哪些 SKU 需要核价',
     desc: '自动汇总床垫组重点 SKU 的站内价、全网价与历史价差，识别需要采销确认的异常价格。',
     trigger: '每日开工、价格星级下降或竞品价格发生变动时触发',
-    inputs: ['价格星级', '站内价格', '全网比价', '重点 SKU 池'],
-    steps: ['读取重点 SKU 清单与近 7 天价格变化', '拉取站内价、全网比价与竞品价', '按价差、价格星级、毛利红线生成异常分层', '输出“需核价 / 可观察 / 无需处理”清单'],
+    inputs: ['巡检类型', '巡检位置', '终端类型', '地区', '商品范围', '商品渠道'],
+    steps: ['查询：读取任务要求中的巡检类型、位置、端侧、地区与商品范围', '新增：创建本次巡检任务草稿并写入国补/政补巡检参数', '修改：按 ERP 账号、京东 pin 和商品渠道补齐筛选条件', '删除：剔除重复 SKU、无效 SKU 和非当前渠道商品', '执行：生成价格异常与腰带展示异常清单'],
     output: '价格异常巡检清单',
     guardrail: '只生成核价清单，不直接改价',
     repeat: '每天 09:30',
@@ -138,7 +165,7 @@ const priceSops: PriceSop[] = [
     desc: '按采销常用路径进入比价页和价格维护页，整理竞对价、来源和建议动作，减少来回跳转。',
     trigger: '巡检发现价差异常、采销打开比价页并反复复制竞对价时触发',
     inputs: ['全网比价页', '竞对链接', '价格维护页', '历史维护记录'],
-    steps: ['进入全网比价页并定位异常 SKU', '提取竞对店铺、竞对价、时间和来源链接', '回填到竞对价维护草稿', '标记无法确认来源或疑似异常的竞对价'],
+    steps: ['查询：进入全网比价页并定位异常 SKU', '新增：创建竞对价维护草稿', '修改：回填竞对店铺、竞对价、时间和来源链接', '删除：排除来源不可信或疑似脏数据的竞对价', '执行：标记需采销确认的竞对价维护项'],
     output: '竞对价维护草稿',
     guardrail: '来源不可信或价差过大时停在人工确认',
     repeat: '每天 10:20',
@@ -152,7 +179,7 @@ const priceSops: PriceSop[] = [
     desc: '结合价差、毛利红线和历史操作策略，生成调价或不跟价反馈草稿，提交前交由采销确认。',
     trigger: '竞对价维护完成，且商品触发跟价、守价或不跟价判断时触发',
     inputs: ['商品成本', '毛利红线', '历史跟价策略', '价格维护权限'],
-    steps: ['读取商品当前售价、成本与毛利红线', '套用历史跟价幅度和不跟价原因模板', '生成调价草稿或不跟价反馈', '提交前展示影响、风险和需确认字段'],
+    steps: ['查询：读取商品当前售价、成本与毛利红线', '新增：生成调价草稿或不跟价反馈草稿', '修改：套用历史跟价幅度、备注模板和保护价规则', '删除：移除超出毛利红线或权限范围的调价项', '执行：提交前展示影响、风险和需确认字段'],
     output: '调价/不跟价反馈草稿',
     guardrail: '任何保存、提交、调京东价动作都必须人工确认',
     repeat: '每天 11:00',
@@ -190,6 +217,80 @@ const scenePreviews: Record<string, ScenePreview> = {
     output: '采购建单草稿',
     cta: 'AI 生成采购建单草稿',
   },
+}
+
+const priceRequirement: TaskRequirement = {
+  title: '请设置任务要求',
+  desc: 'AI 已根据床垫组近期高频路径预填任务参数，你可以在执行前补充或调整。',
+  fields: [
+    {
+      id: 'inspectionType',
+      label: '请选择你要巡检的类型',
+      badge: '多选',
+      mode: 'multi',
+      options: ['国补巡检', '政补巡检'],
+      selected: ['国补巡检', '政补巡检'],
+      columns: 2,
+      required: true,
+    },
+    {
+      id: 'inspectionPosition',
+      label: '请选择你要巡检的位置',
+      badge: '多选',
+      mode: 'multi',
+      options: ['商品主图腰带', '商详信息腰带', '国补价格'],
+      selected: ['商品主图腰带', '商详信息腰带', '国补价格'],
+      columns: 3,
+      required: true,
+    },
+    {
+      id: 'terminal',
+      label: '请选择你要巡检的终端类型',
+      badge: '多选',
+      mode: 'multi',
+      options: ['APP端', 'PC端'],
+      selected: ['APP端', 'PC端'],
+      columns: 2,
+      required: true,
+    },
+    {
+      id: 'region',
+      label: '请选择你要巡检的地区',
+      badge: '已预填',
+      mode: 'select',
+      options: ['华东-上海', '华北-北京', '华南-广东', '西南-四川'],
+      selected: ['华东-上海'],
+      placeholder: '请选择地区',
+      required: true,
+    },
+    {
+      id: 'skuScope',
+      label: '请选择巡检商品范围',
+      mode: 'single',
+      options: ['此ERP账号下所有SKU', '上传SKU列表', '手动输入SKU'],
+      selected: ['此ERP账号下所有SKU'],
+      columns: 3,
+      required: true,
+    },
+    {
+      id: 'channel',
+      label: '请选择商品渠道',
+      mode: 'multi',
+      options: ['自营商品', '京喜商品'],
+      selected: ['自营商品'],
+      columns: 2,
+      required: true,
+    },
+  ],
+  operations: [
+    { type: '查询', title: '读取账号与 pin 关联关系', desc: '确认当前 ERP 账号、京东 pin、商品渠道和可巡检范围。' },
+    { type: '新增', title: '创建巡检任务草稿', desc: '把巡检类型、位置、终端和地区写入任务配置。' },
+    { type: '修改', title: '预填筛选条件', desc: '按商品范围、渠道和地区补齐表单字段，等待采销确认。' },
+    { type: '删除', title: '剔除无效商品', desc: '排除重复 SKU、不可售 SKU、非当前渠道商品和无权限商品。' },
+    { type: '执行', title: '生成巡检结果', desc: '输出国补/政补展示异常、价格异常和需人工确认清单。' },
+  ],
+  note: '国补价格结果千人千面，已关联你的京东 pin（可切换关联 pin），当前账号为 谢理正。',
+  submitText: '开始执行',
 }
 
 function App() {
@@ -443,18 +544,29 @@ function DailyExecution({
               </div>
 
               {isPriceScene ? (
-                <div className="sop-stack">
-                  {priceSops.map((sop, index) => (
-                    <SopCard
-                      completed={completed.includes(sop.id)}
-                      index={index + 1}
-                      key={sop.id}
-                      running={running === sop.id || running === 'all'}
-                      sop={sop}
-                      onExecute={() => executeSop(sop)}
-                    />
-                  ))}
-                </div>
+                <>
+                  <TaskRequirementCard
+                    onRun={executeAll}
+                    requirement={priceRequirement}
+                    running={running !== null}
+                  />
+                  <div className="sop-stack">
+                    <div className="sop-stack-head">
+                      <h3>AI 执行 SOP</h3>
+                      <p>下方是按任务要求拆出的具体执行步骤，所有保存/提交动作停在人工确认前。</p>
+                    </div>
+                    {priceSops.map((sop, index) => (
+                      <SopCard
+                        completed={completed.includes(sop.id)}
+                        index={index + 1}
+                        key={sop.id}
+                        running={running === sop.id || running === 'all'}
+                        sop={sop}
+                        onExecute={() => executeSop(sop)}
+                      />
+                    ))}
+                  </div>
+                </>
               ) : (
                 <ScenePreviewCard
                   preview={selectedPreview}
@@ -493,6 +605,120 @@ function DailyExecution({
         </section>
       </main>
     </div>
+  )
+}
+
+function TaskRequirementCard({
+  onRun,
+  requirement,
+  running,
+}: {
+  onRun: () => void
+  requirement: TaskRequirement
+  running: boolean
+}) {
+  const initialValues = useMemo(() => {
+    return requirement.fields.reduce<Record<string, string[]>>((values, field) => {
+      values[field.id] = field.selected
+      return values
+    }, {})
+  }, [requirement.fields])
+  const [values, setValues] = useState(initialValues)
+
+  useEffect(() => {
+    setValues(initialValues)
+  }, [initialValues])
+
+  const toggleValue = (field: RequirementField, option: string) => {
+    setValues((current) => {
+      if (field.mode === 'single' || field.mode === 'select') {
+        return { ...current, [field.id]: [option] }
+      }
+      const selected = current[field.id] ?? []
+      const next = selected.includes(option)
+        ? selected.filter((item) => item !== option)
+        : [...selected, option]
+      return { ...current, [field.id]: next }
+    })
+  }
+
+  const updateSelect = (field: RequirementField, option: string) => {
+    setValues((current) => ({ ...current, [field.id]: option ? [option] : [] }))
+  }
+
+  const canRun = requirement.fields.every((field) => {
+    if (!field.required) return true
+    return (values[field.id] ?? []).length > 0
+  })
+
+  return (
+    <section className="task-requirement-card">
+      <header>
+        <div>
+          <h3>▣ {requirement.title}</h3>
+          <p>{requirement.desc}</p>
+        </div>
+        <span>{canRun ? '信息已预填' : '待补充'}</span>
+      </header>
+
+      <div className="task-requirement-layout">
+        <div className="requirement-form">
+          {requirement.fields.map((field) => (
+            <section className="requirement-field" key={field.id}>
+              <label>
+                {field.label}
+                {field.badge && <em>{field.badge}</em>}
+              </label>
+
+              {field.mode === 'select' ? (
+                <select
+                  aria-label={field.label}
+                  value={values[field.id]?.[0] ?? ''}
+                  onChange={(event) => updateSelect(field, event.target.value)}
+                >
+                  <option value="">{field.placeholder ?? '请选择'}</option>
+                  {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              ) : (
+                <div className={`requirement-options cols-${field.columns ?? 2}`}>
+                  {field.options.map((option) => {
+                    const selected = values[field.id]?.includes(option)
+                    return (
+                      <button
+                        className={selected ? 'selected' : ''}
+                        key={option}
+                        onClick={() => toggleValue(field, option)}
+                        type="button"
+                      >
+                        {option}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </section>
+          ))}
+
+          <p className="requirement-note">ⓘ {requirement.note}</p>
+          <button className="requirement-submit" disabled={!canRun || running} onClick={onRun} type="button">
+            ✦ {running ? '执行中...' : requirement.submitText}
+          </button>
+        </div>
+
+        <aside className="operation-steps">
+          <h4>AI 将执行的具体操作步骤</h4>
+          {requirement.operations.map((operation, index) => (
+            <article key={`${operation.type}-${operation.title}`}>
+              <span>{index + 1}</span>
+              <div>
+                <strong><em>{operation.type}</em>{operation.title}</strong>
+                <p>{operation.desc}</p>
+              </div>
+            </article>
+          ))}
+        </aside>
+      </div>
+    </section>
   )
 }
 
