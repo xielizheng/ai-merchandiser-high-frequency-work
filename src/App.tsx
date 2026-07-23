@@ -340,7 +340,7 @@ function App() {
 
   return (
     <>
-      {path.includes('/daily-execution') ? (
+      {path.includes('/daily-execution/local') ? (
         <DailyExecution
           completed={completed}
           executeAll={executeAll}
@@ -349,12 +349,111 @@ function App() {
           notify={notify}
           running={running}
         />
+      ) : path.includes('/daily-execution') ? (
+        <HighFrequencyWorkspace navigate={navigate} notify={notify} />
       ) : (
         <DailyReport navigate={navigate} />
       )}
 
       {toast && <div className="toast">✓ {toast}</div>}
     </>
+  )
+}
+
+const centerNavItems = [
+  { label: '新对话', icon: '✧' },
+  { label: 'AI作战室', icon: '▣' },
+  { label: 'AI技能库', icon: '✣' },
+  { label: 'AI操盘手', icon: '◌' },
+  { label: '自动化任务', icon: '▤' },
+  { label: '我的高频工作', icon: '✦', badge: 'NEW' },
+]
+
+function HighFrequencyWorkspace({
+  navigate,
+  notify,
+}: {
+  navigate: (path: string) => void
+  notify: (message: string) => void
+}) {
+  const [loaded, setLoaded] = useState(false)
+
+  return (
+    <div className="center-shell">
+      <header className="center-topbar">
+        <div className="center-product">
+          <span className="center-product-mark">采</span>
+          <strong>采销工作台</strong>
+        </div>
+        <div className="center-search"><span>✦</span><span>AI搜索</span><i>审批中心入口</i></div>
+        <nav className="center-topnav" aria-label="全局导航">
+          <button className="selected" type="button">✦ 经营中心</button>
+          <button type="button">超级运营</button>
+          <button type="button">⌁ 消息</button>
+          <button type="button">▣ 工具箱</button>
+          <button type="button">客户端</button>
+          <button type="button">反馈</button>
+          <span className="center-user">谢理正⌄</span>
+        </nav>
+      </header>
+
+      <div className="center-body">
+        <aside className="center-sidebar">
+          <div className="center-sidebar-title"><span>Ai</span><strong>经营中心</strong><button type="button" aria-label="收起侧栏">◧</button></div>
+          <div className="center-sidebar-nav">
+            {centerNavItems.map((item) => {
+              const active = item.label === '我的高频工作'
+              return (
+                <button
+                  className={active ? 'active' : ''}
+                  key={item.label}
+                  onClick={() => {
+                    if (active) return
+                    if (item.label === '自动化任务') {
+                      notify('自动化任务仍保留在原有模块中')
+                      return
+                    }
+                    notify(`${item.label}模块正在建设中`)
+                  }}
+                  type="button"
+                >
+                  <span>{item.icon}</span>{item.label}{item.badge && <em>{item.badge}</em>}
+                </button>
+              )
+            })}
+          </div>
+          <div className="center-sidebar-divider" />
+          <div className="center-sidebar-group-label">超级工具</div>
+          <button className="center-sidebar-utility" type="button" onClick={() => notify('超级运营模块正在建设中')}><span>⌁</span>超级运营</button>
+          <button className="center-sidebar-utility" type="button" onClick={() => notify('超级大表模块正在建设中')}><span>▤</span>超级大表</button>
+          <div className="center-sidebar-history">
+            <span>历史记录</span>
+            <button type="button" onClick={() => navigate('/')}>运营日报</button>
+            <button type="button" onClick={() => notify('正在打开最近一次高频工作')}>最近一次高频工作</button>
+            <button type="button" onClick={() => notify('正在打开最近一次高频工作')}>价格场景SOP</button>
+          </div>
+        </aside>
+
+        <main className="center-main">
+          <div className="center-main-head">
+            <div>
+              <div className="center-breadcrumb"><span>AI经营中心</span><b>/</b><strong>我的高频工作</strong></div>
+              <h1>我的高频工作</h1>
+              <p>基于你的操作行为，识别反复出现的采销工作，推荐直接处理或创建技能。</p>
+            </div>
+            <button className="source-link" type="button" onClick={() => window.open('http://11.66.132.65/daily-execution/index.html', '_blank', 'noopener,noreferrer')}>打开独立页面 ↗</button>
+          </div>
+          <section className="embedded-workspace" aria-label="我的高频工作页面">
+            {!loaded && <div className="embed-loading"><span>✦</span><strong>正在载入高频工作数据</strong><p>正在连接独立工作页面…</p></div>}
+            <iframe
+              title="我的高频工作"
+              src="http://11.66.132.65/daily-execution/index.html"
+              onLoad={() => setLoaded(true)}
+            />
+          </section>
+        </main>
+      </div>
+    </div>
   )
 }
 
