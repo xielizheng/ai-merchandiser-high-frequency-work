@@ -1728,10 +1728,13 @@ button:disabled {
 
 .embedded-workspace iframe {
   width: 100%;
-  height: 100%;
+  /* The source page includes a personal profile and account switcher above the work data.
+     Keep the useful work surface while ensuring another user's identity is never shown. */
+  height: calc(100% + 282px);
   display: block;
   border: 0;
   background: #f4f6f9;
+  transform: translateY(-282px);
 }
 
 .embed-loading {
@@ -1840,6 +1843,11 @@ button:disabled {
   .embedded-workspace {
     height: calc(100svh - 250px);
     min-height: 520px;
+  }
+
+  .embedded-workspace iframe {
+    height: calc(100% + 258px);
+    transform: translateY(-258px);
   }
 }
 

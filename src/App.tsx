@@ -437,11 +437,9 @@ function HighFrequencyWorkspace({
         <main className="center-main">
           <div className="center-main-head">
             <div>
-              <div className="center-breadcrumb"><span>AI经营中心</span><b>/</b><strong>我的高频工作</strong></div>
               <h1>我的高频工作</h1>
               <p>基于你的操作行为，识别反复出现的采销工作，推荐直接处理或创建技能。</p>
             </div>
-            <button className="source-link" type="button" onClick={() => window.open('http://11.66.132.65/daily-execution/index.html', '_blank', 'noopener,noreferrer')}>打开独立页面 ↗</button>
           </div>
           <section className="embedded-workspace" aria-label="我的高频工作页面">
             {!loaded && <div className="embed-loading"><span>✦</span><strong>正在载入高频工作数据</strong><p>正在连接独立工作页面…</p></div>}
