@@ -546,6 +546,9 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     { icon: '▣', title: '批量改店铺分类', desc: '识别商品店铺与前台类目调整链路，预填 SKU、店铺和类目后批量提交。', steps: ['选商品', '绑店铺', '改类目'], repeat: '8 次', saving: '48.0 分钟' },
     { icon: '▤', title: '主图打标与素材维护', desc: '聚合主图查询、素材生成和上传动作，批量完成营销氛围标签维护。', steps: ['查主图', '生成素材', '提交结果'], repeat: '6 次', saving: '36.5 分钟' },
     { icon: '♧', title: '供应商资质核查', desc: '汇总供应商资质到期和商品线缺失信息，生成待补齐清单。', steps: ['查资质', '补材料', '确认结果'], repeat: '3 次', saving: '28.0 分钟' },
+    { icon: '▣', title: '库存预定与补货草稿', desc: '从库存水位和销量趋势识别待补货 SKU，预填采购量、仓库和到货批次。', steps: ['看库存', '算采购量', '生成草稿'], repeat: '5 次', saving: '42.0 分钟' },
+    { icon: '▱', title: '价格异常巡检', desc: '汇总站内外价格、历史价和毛利红线，生成需要人工确认的异常清单。', steps: ['查价格', '看价差', '生成清单'], repeat: '7 次', saving: '31.5 分钟' },
+    { icon: '♧', title: '报价议价确认', desc: '整理供应商新报价与历史供价，生成带目标价和议价话术的确认草稿。', steps: ['查报价', '算差异', '发起确认'], repeat: '4 次', saving: '26.0 分钟' },
   ]
   const pageSize = 3
   const visibleSuggestions = suggestions.slice((suggestionPage - 1) * pageSize, suggestionPage * pageSize)
