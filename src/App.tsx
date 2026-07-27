@@ -293,20 +293,30 @@ const priceRequirement: TaskRequirement = {
   submitText: '开始执行',
 }
 
+const publicSiteBase = '/ai-merchandiser-high-frequency-work'
+
+function getAppRoute() {
+  const currentPath = window.location.pathname
+  if (currentPath === publicSiteBase || currentPath === `${publicSiteBase}/`) return '/daily-execution'
+  if (currentPath.startsWith(`${publicSiteBase}/`)) return currentPath.slice(publicSiteBase.length) || '/daily-execution'
+  return currentPath
+}
+
 function App() {
-  const [path, setPath] = useState(() => window.location.pathname)
+  const [path, setPath] = useState(getAppRoute)
   const [toast, setToast] = useState('')
   const [running, setRunning] = useState<string | null>(null)
   const [completed, setCompleted] = useState<string[]>([])
 
   useEffect(() => {
-    const onPop = () => setPath(window.location.pathname)
+    const onPop = () => setPath(getAppRoute())
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
   const navigate = (nextPath: string) => {
-    window.history.pushState({}, '', nextPath)
+    const targetPath = window.location.pathname.startsWith(publicSiteBase) ? `${publicSiteBase}${nextPath}` : nextPath
+    window.history.pushState({}, '', targetPath)
     setPath(nextPath)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
