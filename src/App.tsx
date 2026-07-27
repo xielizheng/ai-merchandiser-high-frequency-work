@@ -376,8 +376,6 @@ function HighFrequencyWorkspace({
   navigate: (path: string) => void
   notify: (message: string) => void
 }) {
-  const [loaded, setLoaded] = useState(false)
-
   return (
     <div className="center-shell">
       <header className="center-topbar">
@@ -442,14 +440,70 @@ function HighFrequencyWorkspace({
             </div>
           </div>
           <section className="embedded-workspace" aria-label="我的高频工作页面">
-            {!loaded && <div className="embed-loading"><span>✦</span><strong>正在载入高频工作数据</strong><p>正在连接独立工作页面…</p></div>}
-            <iframe
-              title="我的高频工作"
-              src="http://11.66.132.65/daily-execution/index.html"
-              onLoad={() => setLoaded(true)}
-            />
+            <HighFrequencySurface notify={notify} />
           </section>
         </main>
+      </div>
+    </div>
+  )
+}
+
+function HighFrequencySurface({ notify }: { notify: (message: string) => void }) {
+  const focusItems = [
+    { icon: '▣', title: '商品', desc: '批量改店铺分类、批量创建虚拟组套、商品图片维护', count: '18', time: '5.7H', status: '进行中', active: true },
+    { icon: '♧', title: '商家', desc: '供应商资质经营核查、更新供应商商品线资质', count: '7', time: '54分钟', status: '待开始' },
+    { icon: '⌕', title: '数据', desc: '工具入口看经营', count: '1', time: '1分钟', status: '待开始' },
+  ]
+  const suggestions = [
+    { icon: '▱', title: '比价跟价联动', desc: '识别多页面比价流程并生成调价草稿', repeat: '每周重复 7 次', saving: '节省 0.9 小时' },
+    { icon: '▣', title: '定量建单与库存预定', desc: '按模板建单并批量创建库存预定', repeat: '每周重复 5 次', saving: '节省 0.8 小时' },
+    { icon: '▤', title: '促销券创建与校验', desc: '查询库存券，生成创建或修改草稿', repeat: '每周重复 3 次', saving: '节省 0.4 小时' },
+  ]
+
+  return (
+    <div className="hf-surface">
+      <div className="hf-metrics">
+        <div className="hf-metric hf-metric-purple"><span>□</span><div><small>今日待办</small><strong>11 <em>项任务</em></strong></div></div>
+        <div className="hf-metric hf-metric-green"><span>☑</span><div><small>AI 可处理</small><strong>7 <em>项任务</em></strong></div></div>
+        <div className="hf-metric hf-metric-orange"><span>◷</span><div><small>预计节省</small><strong>2.0H <em>人工耗时</em></strong></div></div>
+      </div>
+
+      <div className="hf-content-grid">
+        <section className="hf-focus-panel">
+          <div className="hf-panel-head">
+            <div><h2>今日重点事项</h2><p>基于页面操作记录识别高频重复流程，把可执行动作停在确认边界前。</p></div>
+            <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
+          </div>
+          <div className="hf-focus-cards">
+            {focusItems.map((item) => (
+              <button className={`hf-focus-card${item.active ? ' is-active' : ''}`} key={item.title} type="button" onClick={() => notify(`${item.title}场景已选中`)}>
+                <div className="hf-card-top"><span className="hf-card-icon">{item.icon}</span><em>{item.status}</em></div>
+                <strong>{item.title}</strong>
+                <p>{item.desc}</p>
+                <div className="hf-card-rule" />
+                <div className="hf-card-meta"><span>重复次数<strong>{item.count}</strong></span><span>累计耗时<strong>{item.time}</strong></span></div>
+              </button>
+            ))}
+          </div>
+          <div className="hf-action-summary">
+            <h3>AI 可一键操作的具体事项</h3>
+            <div className="hf-summary-grid"><span>待处理事项<strong>4项</strong></span><span>可节省耗时<strong>5.7H</strong></span><span>操作样本<strong>18次</strong></span><span>执行边界<strong>提交前确认</strong></span></div>
+            <div className="hf-operation-item"><span className="hf-operation-index">1</span><div><strong>批量改店铺分类</strong><p>通过自营批量工具的绑定店铺入口，批量维护 SKU 所属店铺及店内分类信息。</p></div><button type="button" onClick={() => notify('AI 已准备批量改店铺分类')}>AI 去操作 →</button></div>
+          </div>
+        </section>
+
+        <aside className="hf-suggestion-panel">
+          <div className="hf-panel-head"><div><h2>✦ AI 自动化建议</h2><p>根据近 30 天页面操作记录识别，优先沉淀重复高、耗时集中的动作链路。</p></div></div>
+          <div className="hf-saving"><small>人均每周可释放</small><strong>2.1 小时</strong><span>2.1H<br />每周</span></div>
+          {suggestions.map((item) => (
+            <article className="hf-suggestion-card" key={item.title}>
+              <div className="hf-suggestion-title"><span>{item.icon}</span><strong>{item.title}</strong></div>
+              <p>{item.desc}</p>
+              <div className="hf-suggestion-meta"><span>↻ {item.repeat}</span><span>◷ {item.saving}</span></div>
+              <button type="button" onClick={() => notify(`已准备创建：${item.title}`)}>＋ 创建自动化 →</button>
+            </article>
+          ))}
+        </aside>
       </div>
     </div>
   )
