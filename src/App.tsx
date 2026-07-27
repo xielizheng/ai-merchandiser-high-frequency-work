@@ -73,6 +73,56 @@ type TaskRequirement = {
   submitText: string
 }
 
+type HfIconName = 'calendar' | 'check' | 'clock' | 'package' | 'store' | 'search' | 'megaphone' | 'tag' | 'image' | 'users' | 'warehouse' | 'receipt' | 'sparkles'
+
+function HfIcon({ name, size = 18 }: { name: HfIconName; size?: number }) {
+  let paths
+
+  switch (name) {
+    case 'calendar':
+      paths = <><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M8 3v4M16 3v4M3 10h18" /></>
+      break
+    case 'check':
+      paths = <><rect x="3" y="3" width="18" height="18" rx="4" /><path d="m8 12 2.7 2.7L16.8 9" /></>
+      break
+    case 'clock':
+      paths = <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>
+      break
+    case 'store':
+      paths = <><path d="M4 10v10h16V10M3 10l2-6h14l2 6" /><path d="M8 20v-5h5v5M3 10c1.2 1.6 3.3 1.6 4.5 0 1.2 1.6 3.3 1.6 4.5 0 1.2 1.6 3.3 1.6 4.5 0 1.2 1.6 3.3 1.6 4.5 0" /></>
+      break
+    case 'search':
+      paths = <><circle cx="11" cy="11" r="7" /><path d="m16.5 16.5 4 4" /></>
+      break
+    case 'megaphone':
+      paths = <><path d="M4 13V9l12-5v14L4 13Z" /><path d="M8 14v5H5l-1-6M16 9h3a2 2 0 0 1 0 4h-3" /></>
+      break
+    case 'tag':
+      paths = <><path d="M20 13 12 21 3 12V4h8l9 9Z" /><circle cx="8" cy="9" r="1.5" /></>
+      break
+    case 'image':
+      paths = <><rect x="3" y="4" width="18" height="16" rx="3" /><circle cx="9" cy="10" r="2" /><path d="m4 18 5-4 3 2 3-3 5 5" /></>
+      break
+    case 'users':
+      paths = <><circle cx="9" cy="9" r="3" /><circle cx="17" cy="8" r="2.5" /><path d="M3 20c.5-4 2.5-6 6-6s5.5 2 6 6M15 14c3.5 0 5.5 2 6 5" /></>
+      break
+    case 'warehouse':
+      paths = <><path d="m3 10 9-6 9 6v10H3V10Z" /><path d="M7 20v-6h10v6M8 10h.01M12 10h.01M16 10h.01" /></>
+      break
+    case 'receipt':
+      paths = <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" /><path d="M9 8h6M9 12h6M9 16h4" /></>
+      break
+    case 'sparkles':
+      paths = <><path d="m12 3 1.3 3.7L17 8l-3.7 1.3L12 13l-1.3-3.7L7 8l3.7-1.3L12 3Z" /><path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14ZM5 13l.7 2.3L8 16l-2.3.7L5 19l-.7-2.3L2 16l2.3-.7L5 13Z" /></>
+      break
+    case 'package':
+    default:
+      paths = <><path d="m4 7 8-4 8 4-8 4-8-4Z" /><path d="m4 7 8 4 8-4v10l-8 4-8-4V7ZM12 11v10" /></>
+  }
+
+  return <svg className="hf-icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths}</svg>
+}
+
 const risks: DailyItem[] = [
   { title: '比价跟价待确认', desc: '5 个 SKU 站内外价差异常', badge: '待确认', icon: '🏷️', tone: 'red' },
   { title: '供货报价待议价', desc: '3 条新报价等待核价', badge: '待议价', icon: '📋', tone: 'orange' },
@@ -460,14 +510,16 @@ function HighFrequencyWorkspace({
 
 function HighFrequencySurface({ notify }: { notify: (message: string) => void }) {
   const [suggestionPage, setSuggestionPage] = useState(1)
-  const focusItems = [
-    { icon: '▣', title: '商品', desc: '批量改店铺分类、批量创建虚拟组套、商品图片维护', count: '18', time: '5.7H', status: '进行中', active: true },
-    { icon: '♧', title: '商家', desc: '供应商资质经营核查、更新供应商商品线资质', count: '7', time: '54分钟', status: '待开始' },
-    { icon: '⌕', title: '数据', desc: '工具入口看经营', count: '1', time: '1分钟', status: '待开始' },
+  const [activeFocus, setActiveFocus] = useState('商品')
+  const focusItems: Array<{ icon: HfIconName; title: string; desc: string; count: string; time: string; status: string }> = [
+    { icon: 'package', title: '商品', desc: '批量改店铺分类、创建虚拟组套、维护商品图片', count: '18', time: '5.7H', status: '进行中' },
+    { icon: 'store', title: '商家', desc: '核查供应商经营资质、更新商品线资质', count: '7', time: '54分钟', status: '待开始' },
+    { icon: 'search', title: '数据', desc: '从工具入口查看经营数据与异常线索', count: '1', time: '1分钟', status: '待开始' },
   ]
   const workItems = [
     {
       number: 1,
+      icon: 'store' as HfIconName,
       title: '批量改店铺分类',
       desc: '通过自营批量工具的绑定店铺入口，批量维护 SKU 所属店铺及店内分类信息。',
       taskTitle: '商品店铺/店内分类修改',
@@ -477,6 +529,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 2,
+      icon: 'package' as HfIconName,
       title: '批量创建虚拟组套',
       desc: '通过自营批量工具使用 Excel 批量创建虚拟组套商品，并在执行后返回批量工具入口。',
       taskTitle: '批量创建虚拟组套',
@@ -486,6 +539,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 3,
+      icon: 'image' as HfIconName,
       title: '商品图片素材维护',
       desc: '围绕商品图片及素材进行查询、生成、上传、绑定、提交和查看，用于补齐或核查 SKU 的视觉信息维护结果。',
       taskTitle: '主图打标',
@@ -495,6 +549,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 4,
+      icon: 'warehouse' as HfIconName,
       title: '维护系列规格上柜',
       desc: '围绕目标商品系列浏览或编辑系列信息，核查并维护 SKU 销售规格及关联关系，可选调整展示排序或查看智能推荐，最后通过批量工具发起 SKU 上柜预校验或正式上柜任务。',
       taskTitle: '商品上/下柜',
@@ -504,6 +559,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 5,
+      icon: 'tag' as HfIconName,
       title: '商品价格巡检与跟价',
       desc: '串联全网比价、站内比价和价格维护页，汇总异常 SKU 并生成可确认的跟价草稿。',
       taskTitle: '比价跟价联动',
@@ -513,6 +569,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 6,
+      icon: 'warehouse' as HfIconName,
       title: '定量建单与库存预定',
       desc: '根据销量、库存水位和历史采购量，预填供应商、仓库、采购量与到货批次，生成采购单草稿。',
       taskTitle: '定量建单与库存预定',
@@ -522,6 +579,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 7,
+      icon: 'megaphone' as HfIconName,
       title: '券促配置与校验',
       desc: '查询可用优惠券和历史活动模板，补齐活动门槛、适用 SKU 与生效时间，停在提交前确认。',
       taskTitle: '创建处理单品促销',
@@ -531,6 +589,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       number: 8,
+      icon: 'users' as HfIconName,
       title: '供应商报价议价',
       desc: '汇总新报价、历史供价和采购需求，识别可议价项并生成报价确认草稿。',
       taskTitle: '报价议价确认',
@@ -539,16 +598,16 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
       stats: ['7', '34', '0'],
     },
   ]
-  const suggestions = [
-    { icon: '⚑', title: '提报单品促销', desc: '这批 trace 共同围绕目标 SKU 或商品的单品促销提报，先核查已有促销与价格条件，必要时补齐活动信息。', steps: ['查促销', '看价格', '浏览入口'], repeat: '4 次', saving: '234.3 分钟' },
-    { icon: '⚑', title: '创建处理单品促销', desc: '围绕单品促销活动，浏览配置后创建促销，核查创建任务或促销记录，并执行查询、批量暂停等动作。', steps: ['浏览配置', '创建促销', '查任务状态'], repeat: '9 次', saving: '142.2 分钟' },
-    { icon: '▱', title: '查询撤回调价', desc: '从调价结果或调价入口进入申请处理链路，查询指定调价申请并执行撤回确认，用于取消已发起的调价。', steps: ['看调价结果', '打开调价', '撤回申请'], repeat: '1 次', saving: '5.0 分钟' },
-    { icon: '▣', title: '批量改店铺分类', desc: '识别商品店铺与前台类目调整链路，预填 SKU、店铺和类目后批量提交。', steps: ['选商品', '绑店铺', '改类目'], repeat: '8 次', saving: '48.0 分钟' },
-    { icon: '▤', title: '主图打标与素材维护', desc: '聚合主图查询、素材生成和上传动作，批量完成营销氛围标签维护。', steps: ['查主图', '生成素材', '提交结果'], repeat: '6 次', saving: '36.5 分钟' },
-    { icon: '♧', title: '供应商资质核查', desc: '汇总供应商资质到期和商品线缺失信息，生成待补齐清单。', steps: ['查资质', '补材料', '确认结果'], repeat: '3 次', saving: '28.0 分钟' },
-    { icon: '▣', title: '库存预定与补货草稿', desc: '从库存水位和销量趋势识别待补货 SKU，预填采购量、仓库和到货批次。', steps: ['看库存', '算采购量', '生成草稿'], repeat: '5 次', saving: '42.0 分钟' },
-    { icon: '▱', title: '价格异常巡检', desc: '汇总站内外价格、历史价和毛利红线，生成需要人工确认的异常清单。', steps: ['查价格', '看价差', '生成清单'], repeat: '7 次', saving: '31.5 分钟' },
-    { icon: '♧', title: '报价议价确认', desc: '整理供应商新报价与历史供价，生成带目标价和议价话术的确认草稿。', steps: ['查报价', '算差异', '发起确认'], repeat: '4 次', saving: '26.0 分钟' },
+  const suggestions: Array<{ icon: HfIconName; title: string; desc: string; steps: string[]; repeat: string; saving: string }> = [
+    { icon: 'megaphone', title: '提报单品促销', desc: '围绕目标 SKU 的单品促销提报，核查已有促销与价格条件后补齐活动信息。', steps: ['查促销', '看价格', '浏览入口'], repeat: '4 次', saving: '234.3 分钟' },
+    { icon: 'megaphone', title: '创建处理单品促销', desc: '浏览配置后创建促销，核查创建任务或促销记录，并支持批量暂停。', steps: ['浏览配置', '创建促销', '查任务状态'], repeat: '9 次', saving: '142.2 分钟' },
+    { icon: 'tag', title: '查询撤回调价', desc: '进入申请处理链路，查询指定调价申请并执行撤回确认。', steps: ['看调价结果', '打开调价', '撤回申请'], repeat: '1 次', saving: '5.0 分钟' },
+    { icon: 'store', title: '批量改店铺分类', desc: '识别店铺与前台类目调整链路，预填 SKU、店铺和类目后批量提交。', steps: ['选商品', '绑店铺', '改类目'], repeat: '8 次', saving: '48.0 分钟' },
+    { icon: 'image', title: '主图打标与素材维护', desc: '聚合主图查询、素材生成和上传动作，批量完成营销氛围标签维护。', steps: ['查主图', '生成素材', '提交结果'], repeat: '6 次', saving: '36.5 分钟' },
+    { icon: 'users', title: '供应商资质核查', desc: '汇总供应商资质到期和商品线缺失信息，生成待补齐清单。', steps: ['查资质', '补材料', '确认结果'], repeat: '3 次', saving: '28.0 分钟' },
+    { icon: 'warehouse', title: '库存预定与补货草稿', desc: '从库存水位和销量趋势识别待补货 SKU，预填采购量、仓库和到货批次。', steps: ['看库存', '算采购量', '生成草稿'], repeat: '5 次', saving: '42.0 分钟' },
+    { icon: 'tag', title: '价格异常巡检', desc: '汇总站内外价格、历史价和毛利红线，生成需要人工确认的异常清单。', steps: ['查价格', '看价差', '生成清单'], repeat: '7 次', saving: '31.5 分钟' },
+    { icon: 'receipt', title: '报价议价确认', desc: '整理供应商新报价与历史供价，生成带目标价和议价话术的确认草稿。', steps: ['查报价', '算差异', '发起确认'], repeat: '4 次', saving: '26.0 分钟' },
   ]
   const pageSize = 3
   const visibleSuggestions = suggestions.slice((suggestionPage - 1) * pageSize, suggestionPage * pageSize)
@@ -556,22 +615,23 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
 
   return (
     <div className="hf-surface">
-      <div className="hf-metrics">
-        <div className="hf-metric hf-metric-purple"><span>□</span><div><small>今日待办</small><strong>7 <em>项任务</em></strong></div></div>
-        <div className="hf-metric hf-metric-green"><span>☑</span><div><small>AI 可处理</small><strong>4 <em>项任务</em></strong></div></div>
-        <div className="hf-metric hf-metric-orange"><span>◷</span><div><small>预计节省</small><strong>2.0H <em>人工耗时</em></strong></div></div>
-      </div>
+      <div className="hf-scroll-content">
+        <div className="hf-metrics">
+          <div className="hf-metric hf-metric-purple"><span><HfIcon name="calendar" size={20} /></span><div><small>今日待办</small><strong>7 <em>项任务</em></strong></div></div>
+          <div className="hf-metric hf-metric-green"><span><HfIcon name="check" size={20} /></span><div><small>AI 可处理</small><strong>4 <em>项任务</em></strong></div></div>
+          <div className="hf-metric hf-metric-orange"><span><HfIcon name="clock" size={20} /></span><div><small>预计节省</small><strong>2.0H <em>人工耗时</em></strong></div></div>
+        </div>
 
-      <div className="hf-content-grid">
-        <section className="hf-focus-panel">
+        <div className="hf-content-grid">
+          <section className="hf-focus-panel">
           <div className="hf-panel-head">
             <div><h2>今日重点事项</h2><p>基于页面操作记录识别高频重复流程，把可执行动作停在确认边界前。</p></div>
             <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
           </div>
           <div className="hf-focus-cards">
             {focusItems.map((item) => (
-              <button className={`hf-focus-card${item.active ? ' is-active' : ''}`} key={item.title} type="button" onClick={() => notify(`${item.title}场景已选中`)}>
-                <div className="hf-card-top"><span className="hf-card-icon">{item.icon}</span><em>{item.status}</em></div>
+              <button className={`hf-focus-card${activeFocus === item.title ? ' is-active' : ''}`} key={item.title} type="button" aria-pressed={activeFocus === item.title} onClick={() => { setActiveFocus(item.title); notify(`${item.title}场景已选中`) }}>
+                <div className="hf-card-top"><span className="hf-card-icon"><HfIcon name={item.icon} size={17} /></span><em>{item.status}</em></div>
                 <strong>{item.title}</strong>
                 <p>{item.desc}</p>
                 <div className="hf-card-rule" />
@@ -585,43 +645,46 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
             <div className="hf-work-list">
               {workItems.map((item) => (
                 <article className="hf-work-group" key={item.number}>
-                  <div className="hf-work-heading"><span className="hf-operation-index">{item.number}</span><div><strong>{item.title}</strong><p>{item.desc}</p></div></div>
-                  <div className="hf-work-card">
-                    <div className="hf-work-card-head"><strong>{item.taskTitle}</strong><em>{item.taskBadge}</em></div>
-                    <p>{item.taskDesc}</p>
-                    <div className="hf-work-card-meta"><span>♧ {item.stats[0]}</span><span>▤ {item.stats[1]}</span><span>☆ {item.stats[2]}</span></div>
+                  <div className="hf-work-heading"><span className="hf-operation-index">{item.number}</span><div><div className="hf-work-heading-title"><HfIcon name={item.icon} size={15} /><strong>{item.title}</strong></div><p>{item.desc}</p></div></div>
+                  <div className="hf-work-skill">
+                    <div className="hf-work-skill-copy">
+                      <div className="hf-work-card-head"><span className="hf-work-skill-icon"><HfIcon name="sparkles" size={15} /></span><strong>{item.taskTitle}</strong><em>{item.taskBadge}</em></div>
+                      <p>{item.taskDesc}</p>
+                      <div className="hf-work-card-meta"><span><HfIcon name="users" size={13} /> {item.stats[0]}</span><span><HfIcon name="receipt" size={13} /> {item.stats[1]}</span><span>☆ {item.stats[2]}</span></div>
+                    </div>
+                    <button className="hf-work-action" type="button" onClick={() => notify(`AI 已准备：${item.taskTitle}`)}><HfIcon name="sparkles" size={15} />AI 去操作</button>
                   </div>
-                  <button className="hf-work-action" type="button" onClick={() => notify(`AI 已准备：${item.taskTitle}`)}>→&nbsp; AI 去操作</button>
                 </article>
               ))}
             </div>
           </div>
-        </section>
+          </section>
 
-        <aside className="hf-suggestion-panel">
-          <div className="hf-panel-head"><div><h2>✦ AI 自动化建议</h2><p>根据近 30 天页面操作记录识别，优先沉淀重复高、耗时集中的动作链路。</p></div></div>
-          <div className="hf-saving"><small>人均每周可释放</small><strong>2.1 小时</strong><span>2.1H<br />每周</span></div>
+          <aside className="hf-suggestion-panel">
+          <div className="hf-panel-head"><div><h2 className="hf-heading-with-icon"><HfIcon name="sparkles" size={17} />AI 自动化建议</h2><p>根据近 30 天页面操作记录识别，优先沉淀重复高、耗时集中的动作链路。</p></div><span className="hf-panel-count">9 条</span></div>
+          <div className="hf-saving"><div><small>人均每周可释放</small><strong>2.1 小时</strong></div><span>2.1H<br />每周</span></div>
           {visibleSuggestions.map((item) => (
             <article className="hf-suggestion-card" key={item.title}>
-              <div className="hf-suggestion-title"><span>{item.icon}</span><strong>{item.title}</strong></div>
+              <div className="hf-suggestion-title"><span><HfIcon name={item.icon} size={15} /></span><strong>{item.title}</strong></div>
               <p>{item.desc}</p>
               <div className="hf-suggestion-steps">
                 {item.steps.map((step, index) => <span key={step}><b>{index + 1}</b>{step}</span>)}
               </div>
-              <div className="hf-suggestion-meta"><span>↻ {item.repeat}</span><span>◷ {item.saving}</span></div>
-              <button type="button" onClick={() => notify(`已准备创建：${item.title}`)}>＋ 创建自动化 →</button>
+              <div className="hf-suggestion-meta"><span>↻ {item.repeat}</span><span><HfIcon name="clock" size={12} />{item.saving}</span></div>
+              <button type="button" onClick={() => notify(`已准备创建：${item.title}`)}>创建自动化 <span aria-hidden="true">→</span></button>
             </article>
           ))}
           <div className="hf-suggestion-pagination">
             <button type="button" aria-label="上一页" disabled={suggestionPage === 1} onClick={() => setSuggestionPage((page) => Math.max(1, page - 1))}>←</button>
-            <span>{suggestionPage} / {Math.max(20, suggestionPages)}</span>
-            <button type="button" aria-label="下一页" onClick={() => setSuggestionPage((page) => Math.min(Math.max(20, suggestionPages), page + 1))}>→</button>
+            <span>{suggestionPage} / {suggestionPages}</span>
+            <button type="button" aria-label="下一页" disabled={suggestionPage === suggestionPages} onClick={() => setSuggestionPage((page) => Math.min(suggestionPages, page + 1))}>→</button>
           </div>
-        </aside>
+          </aside>
+        </div>
       </div>
       <div className="hf-bottom-bar">
-        <span><i /> 3 项事项已就绪，涉及保存/提交前保留确认</span>
-        <div><button type="button" onClick={() => notify('已设置为自动执行')}>设为自动执行&nbsp; →</button><button className="is-primary" type="button" onClick={() => notify('AI 正在准备处理全部事项')}>AI 一键处理全部&nbsp; ✦</button></div>
+        <span><i /> 4 项事项已就绪，涉及保存/提交前保留确认</span>
+        <div><button type="button" onClick={() => notify('已设置为自动执行')}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" onClick={() => notify('AI 正在准备处理全部事项')}><HfIcon name="sparkles" size={15} />AI 一键处理全部</button></div>
       </div>
     </div>
   )
