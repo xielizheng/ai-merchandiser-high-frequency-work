@@ -3336,6 +3336,34 @@ button:disabled {
   background: #b7df45;
 }
 
+@container hf-workspace (min-width: 901px) {
+  .embedded-workspace .hf-content-grid {
+    align-items: stretch;
+  }
+
+  .embedded-workspace .hf-suggestion-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .embedded-workspace .hf-suggestion-card {
+    min-height: 0;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .embedded-workspace .hf-suggestion-card > p {
+    min-height: 0;
+  }
+
+  .embedded-workspace .hf-suggestion-card > button,
+  .embedded-workspace .hf-suggestion-pagination {
+    margin-top: auto;
+  }
+}
+
 .hf-action-summary-tools {
   display: flex;
   align-items: center;
