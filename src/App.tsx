@@ -494,8 +494,8 @@ function HighFrequencyWorkspace({
 
         <main className="center-main">
           <div className="center-main-head">
-            <div className="center-profile-summary">
-              <h1>我的高频工作</h1>
+            <h1>我的高频工作</h1>
+            <div className="center-profile-summary" aria-label="近7天采销画像">
               <p><strong>商品 + 营销双核心采销：</strong>商品维护和促销运营占用时间最多，AI 将优先推荐高频、耗时集中的动作链路。</p>
               <div className="center-profile-tags">
                 <span>商品耗时 <strong>42%</strong></span>
