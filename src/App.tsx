@@ -352,6 +352,10 @@ function getAppRoute() {
   return currentPath
 }
 
+function getRouteHref(route: string) {
+  return window.location.pathname.startsWith(publicSiteBase) ? `${publicSiteBase}${route}` : route
+}
+
 function App() {
   const [path, setPath] = useState(getAppRoute)
   const [toast, setToast] = useState('')
@@ -409,6 +413,8 @@ function App() {
           notify={notify}
           running={running}
         />
+      ) : path.includes('/work-menu/') ? (
+        <WorkMenuPage path={path} navigate={navigate} notify={notify} />
       ) : path.includes('/daily-execution') ? (
         <HighFrequencyWorkspace navigate={navigate} notify={notify} />
       ) : (
@@ -428,6 +434,151 @@ const centerNavItems = [
   { label: '自动化任务', icon: '▤' },
   { label: '我的高频工作', icon: '✦', badge: 'NEW' },
 ]
+
+const workMenuPages: Record<string, { title: string; group: string; menu: string; desc: string; icon: HfIconName }> = {
+  '/work-menu/batch-shop-category': {
+    title: '批量改店铺分类',
+    group: '自营批量工具',
+    menu: '绑定店铺',
+    desc: '批量维护 SKU 所属店铺及店内分类信息。',
+    icon: 'store',
+  },
+  '/work-menu/virtual-bundle': {
+    title: '批量创建虚拟组套',
+    group: '自营批量工具',
+    menu: '虚拟组套',
+    desc: '通过 Excel 批量创建虚拟组套商品。',
+    icon: 'package',
+  },
+  '/work-menu/product-image-assets': {
+    title: '商品图片素材维护',
+    group: '商品管理',
+    menu: '图片素材',
+    desc: '查询、生成、上传并绑定商品图片素材。',
+    icon: 'image',
+  },
+  '/work-menu/series-shelf': {
+    title: '维护系列规格上柜',
+    group: '商品管理',
+    menu: '系列规格',
+    desc: '维护系列、销售规格与 SKU 上下柜状态。',
+    icon: 'warehouse',
+  },
+  '/work-menu/supplier-qualification': {
+    title: '供应商经营资质核查',
+    group: '商家管理',
+    menu: '经营资质',
+    desc: '核查供应商经营资质、有效期与缺失材料。',
+    icon: 'users',
+  },
+  '/work-menu/supplier-product-line': {
+    title: '供应商商品线资质更新',
+    group: '商家管理',
+    menu: '商品线资质',
+    desc: '更新供应商商品线资质及关联材料。',
+    icon: 'store',
+  },
+  '/work-menu/supplier-quotation': {
+    title: '供应商报价议价',
+    group: '商家管理',
+    menu: '报价管理',
+    desc: '查看供应商报价、历史供价与议价记录。',
+    icon: 'receipt',
+  },
+  '/work-menu/business-data-audit': {
+    title: '经营数据异常巡检',
+    group: '数据中心',
+    menu: '经营分析',
+    desc: '查看销售、流量、转化与库存异常线索。',
+    icon: 'search',
+  },
+  '/work-menu/sales-inventory-trend': {
+    title: '销量与库存趋势分析',
+    group: '数据中心',
+    menu: '销售库存',
+    desc: '分析销量、库存水位与周转趋势。',
+    icon: 'warehouse',
+  },
+  '/work-menu/operations-report': {
+    title: '经营报表导出与复盘',
+    group: '数据中心',
+    menu: '经营报表',
+    desc: '按常用口径生成并导出经营复盘报表。',
+    icon: 'receipt',
+  },
+}
+
+function WorkMenuPage({
+  path,
+  navigate,
+  notify,
+}: {
+  path: string
+  navigate: (path: string) => void
+  notify: (message: string) => void
+}) {
+  const page = workMenuPages[path] ?? workMenuPages['/work-menu/batch-shop-category']
+
+  return (
+    <div className="center-shell">
+      <header className="center-topbar">
+        <div className="center-product">
+          <span className="center-product-mark">采</span>
+          <strong>采销工作台</strong>
+        </div>
+        <div className="center-search"><span>✦</span><span>AI搜索</span><i>审批中心入口</i></div>
+        <nav className="center-topnav" aria-label="全局导航">
+          <button className="selected" type="button">✦ 经营中心</button>
+          <button type="button">超级运营</button>
+          <button type="button">⌁ 消息</button>
+          <button type="button">▣ 工具箱</button>
+          <button type="button">客户端</button>
+          <button type="button">反馈</button>
+          <span className="center-user">谢理正⌄</span>
+        </nav>
+      </header>
+
+      <div className="center-body">
+        <aside className="center-sidebar tool-menu-sidebar">
+          <div className="center-sidebar-title"><span>Ai</span><strong>{page.group}</strong></div>
+          <div className="tool-menu-nav">
+            <button className="active" type="button"><HfIcon name={page.icon} size={16} />{page.menu}</button>
+            <button type="button" onClick={() => notify('任务记录模块正在建设中')}><HfIcon name="receipt" size={16} />任务记录</button>
+            <button type="button" onClick={() => notify('操作日志模块正在建设中')}><HfIcon name="clock" size={16} />操作日志</button>
+          </div>
+          <button className="tool-menu-back" type="button" onClick={() => navigate('/daily-execution')}>← 返回我的高频工作</button>
+        </aside>
+
+        <main className="tool-menu-main">
+          <div className="tool-menu-breadcrumb"><button type="button" onClick={() => navigate('/daily-execution')}>我的高频工作</button><span>/</span><span>{page.group}</span><span>/</span><strong>{page.menu}</strong></div>
+          <header className="tool-menu-header">
+            <div>
+              <span className="tool-menu-icon"><HfIcon name={page.icon} size={21} /></span>
+              <div><h1>{page.title}</h1><p>{page.desc}</p></div>
+            </div>
+            <button type="button" onClick={() => notify(`已进入：${page.title}`)}>开始处理 →</button>
+          </header>
+
+          <section className="tool-menu-surface" aria-label={`${page.title}菜单页面`}>
+            <div className="tool-menu-toolbar">
+              <strong>{page.menu}</strong>
+              <div><button type="button">使用说明</button><button type="button">历史任务</button></div>
+            </div>
+            <div className="tool-menu-form">
+              <label><span>操作范围</span><input readOnly value="当前 ERP 账号下的商品" /></label>
+              <label><span>目标菜单</span><input readOnly value={`${page.group} / ${page.menu}`} /></label>
+              <label><span>执行方式</span><input readOnly value="人工确认后执行" /></label>
+            </div>
+            <div className="tool-menu-ready">
+              <span><HfIcon name="check" size={19} /></span>
+              <div><strong>已跳转到对应菜单</strong><p>当前页面已定位至「{page.group} / {page.menu}」，可继续补充具体操作信息。</p></div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  )
+}
 
 function HighFrequencyWorkspace({
   navigate,
@@ -507,7 +658,7 @@ function HighFrequencyWorkspace({
             </div>
           </div>
           <section className="embedded-workspace" aria-label="我的高频工作页面">
-            <HighFrequencySurface notify={notify} />
+            <HighFrequencySurface navigate={navigate} notify={notify} />
           </section>
         </main>
       </div>
@@ -515,7 +666,13 @@ function HighFrequencyWorkspace({
   )
 }
 
-function HighFrequencySurface({ notify }: { notify: (message: string) => void }) {
+function HighFrequencySurface({
+  navigate,
+  notify,
+}: {
+  navigate: (path: string) => void
+  notify: (message: string) => void
+}) {
   const [suggestionPage, setSuggestionPage] = useState(1)
   const [activeFocus, setActiveFocus] = useState('商品')
   const focusItems: Array<{ icon: HfIconName; title: string; desc: string; count: string; time: string; status: string }> = [
@@ -526,6 +683,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
   const workItems = [
     {
       scene: '商品',
+      menuPath: '/work-menu/batch-shop-category',
       number: 1,
       icon: 'store' as HfIconName,
       title: '批量改店铺分类',
@@ -537,6 +695,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '商品',
+      menuPath: '/work-menu/virtual-bundle',
       number: 2,
       icon: 'package' as HfIconName,
       title: '批量创建虚拟组套',
@@ -548,6 +707,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '商品',
+      menuPath: '/work-menu/product-image-assets',
       number: 3,
       icon: 'image' as HfIconName,
       title: '商品图片素材维护',
@@ -559,6 +719,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '商品',
+      menuPath: '/work-menu/series-shelf',
       number: 4,
       icon: 'warehouse' as HfIconName,
       title: '维护系列规格上柜',
@@ -570,6 +731,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '商家',
+      menuPath: '/work-menu/supplier-qualification',
       number: 5,
       icon: 'users' as HfIconName,
       title: '供应商经营资质核查',
@@ -581,6 +743,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '商家',
+      menuPath: '/work-menu/supplier-product-line',
       number: 6,
       icon: 'store' as HfIconName,
       title: '供应商商品线资质更新',
@@ -592,6 +755,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '商家',
+      menuPath: '/work-menu/supplier-quotation',
       number: 7,
       icon: 'receipt' as HfIconName,
       title: '供应商报价议价',
@@ -603,6 +767,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '数据',
+      menuPath: '/work-menu/business-data-audit',
       number: 8,
       icon: 'search' as HfIconName,
       title: '经营数据异常巡检',
@@ -614,6 +779,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '数据',
+      menuPath: '/work-menu/sales-inventory-trend',
       number: 9,
       icon: 'warehouse' as HfIconName,
       title: '销量与库存趋势分析',
@@ -625,6 +791,7 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
     },
     {
       scene: '数据',
+      menuPath: '/work-menu/operations-report',
       number: 10,
       icon: 'receipt' as HfIconName,
       title: '经营报表导出与复盘',
@@ -688,11 +855,27 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
               <h3>AI 可一键操作的具体事项</h3>
               <span>{activeFocus}场景 · {activeWorkItems.length} 项</span>
             </div>
-            <div className="hf-summary-grid"><span>待处理事项<strong>{activeWorkItems.length}项</strong></span><span>可节省耗时<strong>{activeFocusDetail.saving}</strong></span><span>操作样本<strong>{activeFocusDetail.samples}</strong></span><span>执行边界<strong>{activeFocusDetail.boundary}</strong></span></div>
+            <div className="hf-summary-grid"><span>待处理事项<strong>{activeWorkItems.length}项</strong></span><span>可节省耗时<strong>{activeFocusDetail.saving}</strong></span><span>操作样本<strong>{activeFocusDetail.samples}</strong></span></div>
             <div className="hf-work-list">
               {activeWorkItems.map((item, index) => (
                 <article className="hf-work-group" key={item.title}>
-                  <div className="hf-work-heading"><span className="hf-operation-index">{index + 1}</span><div><div className="hf-work-heading-title"><HfIcon name={item.icon} size={15} /><strong>{item.title}</strong></div><p>{item.desc}</p></div></div>
+                  <div className="hf-work-heading">
+                    <span className="hf-operation-index">{index + 1}</span>
+                    <div>
+                      <a
+                        className="hf-work-heading-title"
+                        href={getRouteHref(item.menuPath)}
+                        onClick={(event) => {
+                          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                          event.preventDefault()
+                          navigate(item.menuPath)
+                        }}
+                      >
+                        <HfIcon name={item.icon} size={15} /><strong>{item.title}</strong><span aria-hidden="true">↗</span>
+                      </a>
+                      <p>{item.desc}</p>
+                    </div>
+                  </div>
                   <div className="hf-work-skill">
                     <div className="hf-work-skill-copy">
                       <div className="hf-work-card-head"><span className="hf-work-skill-icon"><HfIcon name="sparkles" size={15} /></span><strong>{item.taskTitle}</strong><em>{item.taskBadge}</em></div>
