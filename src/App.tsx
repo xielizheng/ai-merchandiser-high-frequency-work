@@ -839,18 +839,9 @@ function HighFrequencySurface({
             <div><h2>今日重点事项</h2><p>基于页面操作记录识别高频重复流程，把可执行动作停在确认边界前。</p></div>
             <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
           </div>
-          <div className="hf-focus-cards" role="tablist" aria-label="高频工作场景">
+          <div className="hf-focus-cards">
             {focusItems.map((item) => (
-              <button
-                className={`hf-focus-card${activeFocus === item.title ? ' is-active' : ''}`}
-                id={`hf-focus-tab-${item.title}`}
-                key={item.title}
-                type="button"
-                role="tab"
-                aria-controls={`hf-focus-panel-${item.title}`}
-                aria-selected={activeFocus === item.title}
-                onClick={() => { setActiveFocus(item.title); notify(`${item.title}场景已选中`) }}
-              >
+              <button className={`hf-focus-card${activeFocus === item.title ? ' is-active' : ''}`} key={item.title} type="button" aria-pressed={activeFocus === item.title} onClick={() => { setActiveFocus(item.title); notify(`${item.title}场景已选中`) }}>
                 <div className="hf-card-top"><span className="hf-card-icon"><HfIcon name={item.icon} size={17} /></span><em>{item.status}</em></div>
                 <strong>{item.title}</strong>
                 <p>{item.desc}</p>
@@ -859,17 +850,10 @@ function HighFrequencySurface({
               </button>
             ))}
           </div>
-          <div
-            className="hf-action-summary"
-            id={`hf-focus-panel-${activeFocus}`}
-            key={activeFocus}
-            role="tabpanel"
-            aria-labelledby={`hf-focus-tab-${activeFocus}`}
-            aria-live="polite"
-          >
+          <div className="hf-action-summary" key={activeFocus} aria-live="polite">
             <div className="hf-action-summary-head">
-              <h3><span>{activeFocus}</span>场景可一键操作的具体事项</h3>
-              <span>{activeWorkItems.length} 项</span>
+              <h3>AI 可一键操作的具体事项</h3>
+              <span>{activeFocus}场景 · {activeWorkItems.length} 项</span>
             </div>
             <div className="hf-summary-grid"><span>待处理事项<strong>{activeWorkItems.length}项</strong></span><span>可节省耗时<strong>{activeFocusDetail.saving}</strong></span><span>操作样本<strong>{activeFocusDetail.samples}</strong></span></div>
             <div className="hf-work-list">

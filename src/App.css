@@ -1959,9 +1959,7 @@ button:disabled {
 .hf-legend .is-active { background: var(--hf-blue); }
 
 .hf-focus-cards {
-  position: relative;
-  z-index: 1;
-  padding: 0 16px;
+  padding: 0 16px 17px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
@@ -1971,7 +1969,7 @@ button:disabled {
   min-width: 0;
   padding: 15px;
   border: 1px solid var(--hf-line);
-  border-radius: 11px 11px 0 0;
+  border-radius: 11px;
   color: var(--hf-ink);
   background: #fbfcfe;
   text-align: left;
@@ -1992,7 +1990,6 @@ button:disabled {
 
 .hf-focus-card.is-active {
   border-color: #7594f7;
-  border-bottom-color: #fff;
   background: var(--hf-blue-soft);
   box-shadow: 0 0 0 1px rgba(63, 109, 243, 0.08);
 }
@@ -2075,11 +2072,8 @@ button:disabled {
 }
 
 .hf-action-summary {
-  position: relative;
-  z-index: 0;
-  margin-top: -1px;
   padding: 18px;
-  border-top: 1px solid var(--hf-line);
+  border-top: 1px solid #e8edf4;
 }
 
 .hf-action-summary-head {
@@ -2095,10 +2089,6 @@ button:disabled {
   color: var(--hf-ink);
   font-size: 14px;
   letter-spacing: -0.01em;
-}
-
-.hf-action-summary h3 > span {
-  color: var(--hf-blue-dark);
 }
 
 .hf-action-summary-head > span {
@@ -3171,14 +3161,14 @@ button:disabled {
 }
 
 .hf-focus-cards {
-  padding: 0 14px;
+  padding: 0 14px 15px;
   gap: 9px;
 }
 
 .hf-focus-card {
   padding: 14px;
   border-color: #e0e5de;
-  border-radius: 10px 10px 0 0;
+  border-radius: 10px;
   background: #fafbf9;
 }
 
@@ -3189,7 +3179,6 @@ button:disabled {
 
 .hf-focus-card.is-active {
   border-color: #9bc449;
-  border-bottom-color: #fff;
   background: #f4f9e8;
   box-shadow: inset 0 0 0 1px rgba(155, 196, 73, 0.12);
 }
@@ -3205,7 +3194,7 @@ button:disabled {
 }
 
 .hf-action-summary {
-  border-top-color: #c9dca5;
+  border-color: #e3e8e1;
 }
 
 .hf-action-summary-head > span {
@@ -3591,23 +3580,6 @@ button:disabled {
 }
 
 @container hf-workspace (max-width: 620px) {
-  .hf-focus-cards {
-    padding: 0 12px 12px;
-  }
-
-  .hf-focus-card {
-    border-radius: 10px;
-  }
-
-  .hf-focus-card.is-active {
-    border-bottom-color: #9bc449;
-  }
-
-  .hf-action-summary {
-    margin-top: 0;
-    border-top-color: #e3e8e1;
-  }
-
   .hf-summary-grid {
     grid-template-columns: 1fr;
   }
