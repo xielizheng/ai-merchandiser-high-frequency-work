@@ -1042,12 +1042,8 @@ function EmbeddedDailyReport({
               </button>
             </section>
 
-            <section className="daily-high-frequency-section" aria-labelledby="high-frequency-heading">
+            <section className="daily-high-frequency-section" aria-label="高频工作">
               <div className="daily-high-frequency-head">
-                <div>
-                  <span className="daily-hf-symbol"><HfIcon name="sparkles" size={18} /></span>
-                  <div><h2 id="high-frequency-heading">高频工作</h2><p>基于近 7 天操作行为，识别反复出现的采销工作，并在日报中直接处理。</p></div>
-                </div>
                 <span className="daily-hf-update">今日更新 · 10 项</span>
               </div>
               <div className="daily-report-high-frequency">
