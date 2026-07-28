@@ -426,13 +426,13 @@ function App() {
   )
 }
 
-const centerNavItems = [
+const centerNavItems: Array<{ label: string; icon: string; badge?: string }> = [
   { label: '新对话', icon: '✧' },
   { label: 'AI作战室', icon: '▣' },
   { label: 'AI技能库', icon: '✣' },
   { label: 'AI操盘手', icon: '◌' },
   { label: '自动化任务', icon: '▤' },
-  { label: '我的高频工作', icon: '✦', badge: 'NEW' },
+  { label: '我的高频工作', icon: '✦' },
 ]
 
 const workMenuPages: Record<string, { title: string; group: string; menu: string; desc: string; icon: HfIconName }> = {
@@ -675,10 +675,10 @@ function HighFrequencySurface({
 }) {
   const [suggestionPage, setSuggestionPage] = useState(1)
   const [activeFocus, setActiveFocus] = useState('商品')
-  const focusItems: Array<{ icon: HfIconName; title: string; desc: string; count: string; time: string; status: string }> = [
-    { icon: 'package', title: '商品', desc: '批量改店铺分类、创建虚拟组套、维护商品图片', count: '18', time: '5.7H', status: '进行中' },
-    { icon: 'store', title: '商家', desc: '核查供应商经营资质、更新商品线资质', count: '7', time: '54分钟', status: '待开始' },
-    { icon: 'search', title: '数据', desc: '巡检经营数据、定位异常线索、生成复盘报表', count: '6', time: '48分钟', status: '待开始' },
+  const focusItems: Array<{ icon: HfIconName; title: string; desc: string; items: string; count: string; time: string; status: string }> = [
+    { icon: 'package', title: '商品', desc: '批量改店铺分类、创建虚拟组套、维护商品图片', items: '4项', count: '18', time: '5.7H', status: '进行中' },
+    { icon: 'store', title: '商家', desc: '核查供应商经营资质、更新商品线资质', items: '3项', count: '7', time: '54分钟', status: '待开始' },
+    { icon: 'search', title: '数据', desc: '巡检经营数据、定位异常线索、生成复盘报表', items: '3项', count: '6', time: '48分钟', status: '待开始' },
   ]
   const workItems = [
     {
@@ -846,7 +846,7 @@ function HighFrequencySurface({
                 <strong>{item.title}</strong>
                 <p>{item.desc}</p>
                 <div className="hf-card-rule" />
-                <div className="hf-card-meta"><span>重复次数<strong>{item.count}</strong></span><span>累计耗时<strong>{item.time}</strong></span></div>
+                <div className="hf-card-meta"><span>事项数<strong>{item.items}</strong></span><span>重复次数<strong>{item.count}</strong></span><span>累计耗时<strong>{item.time}</strong></span></div>
               </button>
             ))}
           </div>

@@ -2048,18 +2048,27 @@ button:disabled {
 }
 
 .hf-card-meta {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   color: var(--hf-muted);
   font-size: 10px;
+}
+
+.hf-card-meta span:nth-child(2) {
+  text-align: center;
+}
+
+.hf-card-meta span:last-child {
+  text-align: right;
 }
 
 .hf-card-meta strong {
   display: block;
   margin-top: 4px;
   color: var(--hf-ink);
-  font-size: 15px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .hf-action-summary {
