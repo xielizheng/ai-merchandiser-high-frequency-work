@@ -2623,6 +2623,20 @@ button:disabled {
     padding: 0 12px 13px;
   }
 
+  .hf-focus-tabs {
+    gap: 24px;
+    margin: 0 14px;
+    padding-bottom: 11px;
+  }
+
+  .hf-focus-tabs button {
+    min-height: 36px;
+  }
+
+  .hf-focus-tabs button::after {
+    bottom: -12px;
+  }
+
   .hf-action-summary {
     padding: 14px 12px;
   }
@@ -3195,6 +3209,79 @@ button:disabled {
   background: #e1f2b9;
 }
 
+.hf-focus-tabs {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  margin: 0 18px;
+  padding: 0 0 13px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--hf-line);
+  scrollbar-width: none;
+}
+
+.hf-focus-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.hf-focus-tabs button {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: baseline;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 1px;
+  border: 0;
+  color: #6f7b74;
+  background: transparent;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.hf-focus-tabs button::after {
+  position: absolute;
+  right: 0;
+  bottom: -14px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: #7bb82f;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 160ms ease;
+}
+
+.hf-focus-tabs button strong {
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hf-focus-tabs button span {
+  color: #969f99;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hf-focus-tabs button:hover,
+.hf-focus-tabs button.is-active {
+  color: #17251f;
+}
+
+.hf-focus-tabs button.is-active {
+  font-weight: 700;
+}
+
+.hf-focus-tabs button.is-active::after {
+  transform: scaleX(1);
+}
+
+.hf-focus-tabs button.is-active span {
+  color: #527f2d;
+}
+
 .hf-action-summary {
   border-color: #e3e8e1;
 }
@@ -3226,6 +3313,20 @@ button:disabled {
   max-width: 100%;
   color: #17251f;
   text-decoration: none;
+}
+
+.hf-work-scene-tag {
+  display: inline-flex;
+  margin-left: 7px;
+  padding: 2px 7px;
+  border: 1px solid #dfe6dc;
+  border-radius: 999px;
+  color: #65736b;
+  background: #f5f7f3;
+  font-size: 10px;
+  font-style: normal;
+  line-height: 1.35;
+  vertical-align: middle;
 }
 
 .hf-work-heading-title > span:last-child {

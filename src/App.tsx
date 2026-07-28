@@ -703,19 +703,26 @@ function HighFrequencySurface({
   suggestionPageSize?: number
 }) {
   const [suggestionPage, setSuggestionPage] = useState(1)
-  const [activeFocus, setActiveFocus] = useState('商品')
+  const [activeFocus, setActiveFocus] = useState('全部')
   const [hiddenWorkItems, setHiddenWorkItems] = useState<string[]>([])
   const [selectedWorkItems, setSelectedWorkItems] = useState<string[]>([
     '/work-menu/batch-shop-category',
     '/work-menu/virtual-bundle',
     '/work-menu/product-image-assets',
     '/work-menu/series-shelf',
+    '/work-menu/supplier-qualification',
+    '/work-menu/supplier-product-line',
+    '/work-menu/supplier-quotation',
+    '/work-menu/business-data-audit',
+    '/work-menu/sales-inventory-trend',
+    '/work-menu/operations-report',
   ])
   const [votedWishes, setVotedWishes] = useState<string[]>(['price-contract'])
-  const focusItems: Array<{ icon: HfIconName; title: string; desc: string; items: string; count: string; time: string; status: string }> = [
-    { icon: 'package', title: '商品', desc: '批量改店铺分类、创建虚拟组套、维护商品图片', items: '4项', count: '18', time: '5.7H', status: '进行中' },
-    { icon: 'store', title: '商家', desc: '核查供应商经营资质、更新商品线资质', items: '3项', count: '7', time: '54分钟', status: '待开始' },
-    { icon: 'search', title: '数据', desc: '巡检经营数据、定位异常线索、生成复盘报表', items: '3项', count: '6', time: '48分钟', status: '待开始' },
+  const focusItems: Array<{ title: string; items: number }> = [
+    { title: '全部', items: 10 },
+    { title: '商品', items: 4 },
+    { title: '商家', items: 3 },
+    { title: '数据', items: 3 },
   ]
   const workItems = [
     {
@@ -840,11 +847,12 @@ function HighFrequencySurface({
     },
   ]
   const focusDetails: Record<string, { saving: string; samples: string; boundary: string }> = {
+    全部: { saving: '7.4H', samples: '31次', boundary: '提交前确认' },
     商品: { saving: '5.7H', samples: '18次', boundary: '提交前确认' },
     商家: { saving: '54分钟', samples: '7次', boundary: '资质更新前确认' },
     数据: { saving: '48分钟', samples: '6次', boundary: '只读/导出前确认' },
   }
-  const activeWorkItems = workItems.filter((item) => item.scene === activeFocus)
+  const activeWorkItems = activeFocus === '全部' ? workItems : workItems.filter((item) => item.scene === activeFocus)
   const visibleWorkItems = activeWorkItems.filter((item) => !hiddenWorkItems.includes(item.menuPath))
   const selectedVisibleWorkItems = visibleWorkItems.filter((item) => selectedWorkItems.includes(item.menuPath))
   const activeFocusDetail = focusDetails[activeFocus]
@@ -886,7 +894,7 @@ function HighFrequencySurface({
   const suggestionPages = Math.ceil(suggestions.length / suggestionPageSize)
   const selectFocus = (focus: string) => {
     setActiveFocus(focus)
-    const nextItems = workItems.filter((item) => item.scene === focus && !hiddenWorkItems.includes(item.menuPath))
+    const nextItems = workItems.filter((item) => (focus === '全部' || item.scene === focus) && !hiddenWorkItems.includes(item.menuPath))
     setSelectedWorkItems(nextItems.map((item) => item.menuPath))
     notify(`${focus}场景已选中`)
   }
@@ -921,17 +929,20 @@ function HighFrequencySurface({
             <div><h2>今日重点事项</h2><p>基于页面操作记录识别高频重复流程，把可执行动作停在确认边界前。</p></div>
             <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
           </div>
-          <div className="hf-focus-cards">
+          <nav className="hf-focus-tabs" aria-label="高频工作分类">
             {focusItems.map((item) => (
-              <button className={`hf-focus-card${activeFocus === item.title ? ' is-active' : ''}`} key={item.title} type="button" aria-pressed={activeFocus === item.title} onClick={() => selectFocus(item.title)}>
-                <div className="hf-card-top"><span className="hf-card-icon"><HfIcon name={item.icon} size={17} /></span><em>{item.status}</em></div>
+              <button
+                className={activeFocus === item.title ? 'is-active' : ''}
+                key={item.title}
+                type="button"
+                aria-pressed={activeFocus === item.title}
+                onClick={() => selectFocus(item.title)}
+              >
                 <strong>{item.title}</strong>
-                <p>{item.desc}</p>
-                <div className="hf-card-rule" />
-                <div className="hf-card-meta"><span>事项数<strong>{item.items}</strong></span><span>重复次数<strong>{item.count}</strong></span><span>累计耗时<strong>{item.time}</strong></span></div>
+                <span>{item.items}</span>
               </button>
             ))}
-          </div>
+          </nav>
           <div className="hf-action-summary" key={activeFocus} aria-live="polite">
             <div className="hf-action-summary-head">
               <h3>AI 可一键操作的具体事项</h3>
@@ -977,6 +988,7 @@ function HighFrequencySurface({
                       >
                         <HfIcon name={item.icon} size={15} /><strong>{item.title}</strong><span aria-hidden="true">↗</span>
                       </a>
+                      {activeFocus === '全部' && <em className="hf-work-scene-tag">{item.scene}</em>}
                       <p>{item.desc}</p>
                     </div>
                   </div>
