@@ -432,7 +432,6 @@ const centerNavItems: Array<{ label: string; icon: string; badge?: string }> = [
   { label: 'AI技能库', icon: '✣' },
   { label: 'AI操盘手', icon: '◌' },
   { label: '自动化任务', icon: '▤' },
-  { label: '我的高频工作', icon: '✦' },
 ]
 
 const workMenuPages: Record<string, { title: string; group: string; menu: string; desc: string; icon: HfIconName }> = {
@@ -611,13 +610,10 @@ function HighFrequencyWorkspace({
           <div className="center-sidebar-title"><span>Ai</span><strong>经营中心</strong><button type="button" aria-label="收起侧栏">◧</button></div>
           <div className="center-sidebar-nav">
             {centerNavItems.map((item) => {
-              const active = item.label === '我的高频工作'
               return (
                 <button
-                  className={active ? 'active' : ''}
                   key={item.label}
                   onClick={() => {
-                    if (active) return
                     if (item.label === '自动化任务') {
                       notify('自动化任务仍保留在原有模块中')
                       return
@@ -635,6 +631,8 @@ function HighFrequencyWorkspace({
           <div className="center-sidebar-group-label">超级工具</div>
           <button className="center-sidebar-utility" type="button" onClick={() => notify('超级运营模块正在建设中')}><span>⌁</span>超级运营</button>
           <button className="center-sidebar-utility" type="button" onClick={() => notify('超级大表模块正在建设中')}><span>▤</span>超级大表</button>
+          <button className="center-sidebar-utility" type="button" onClick={() => notify('协同任务模块正在建设中')}><span>♧</span>协同任务</button>
+          <button className="center-sidebar-utility active" type="button" aria-current="page"><span>✦</span>我的高频工作</button>
           <div className="center-sidebar-history">
             <span>历史记录</span>
             <button type="button" onClick={() => navigate('/')}>运营日报</button>
