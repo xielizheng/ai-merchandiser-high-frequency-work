@@ -965,7 +965,7 @@ function HighFrequencySurface({
             </div>
             <div className="hf-summary-grid"><span>本次已选<strong>{selectedVisibleWorkItems.length}项</strong></span><span>可节省耗时<strong>{activeFocusDetail.saving}</strong></span><span>操作样本<strong>{activeFocusDetail.samples}</strong></span></div>
             <div className="hf-work-list">
-              {visibleWorkItems.map((item, index) => {
+              {visibleWorkItems.map((item) => {
                 const selected = selectedWorkItems.includes(item.menuPath)
                 return (
                 <article className={`hf-work-group${selected ? ' is-selected' : ''}`} key={item.title}>
@@ -975,7 +975,6 @@ function HighFrequencySurface({
                       <input type="checkbox" checked={selected} onChange={() => toggleWorkItem(item.menuPath)} aria-label={`选择${item.title}`} />
                       <span><HfIcon name="check" size={13} /></span>
                     </label>
-                    <span className="hf-operation-index">{index + 1}</span>
                     <div>
                       <a
                         className="hf-work-heading-title"
@@ -1017,57 +1016,59 @@ function HighFrequencySurface({
           </div>
           </section>
 
-          <aside className="hf-suggestion-panel">
-          <div className="hf-panel-head"><div><h2 className="hf-heading-with-icon"><HfIcon name="sparkles" size={17} />AI 自动化建议</h2><p>根据近 30 天页面操作记录识别，优先沉淀重复高、耗时集中的动作链路。</p></div><span className="hf-panel-count">9 条</span></div>
-          <div className="hf-saving"><div><small>人均每周可释放</small><strong>2.1 小时</strong></div><span>2.1H<br />每周</span></div>
-          {visibleSuggestions.map((item) => (
-            <article className="hf-suggestion-card" key={item.title}>
-              <div className="hf-suggestion-title"><span><HfIcon name={item.icon} size={15} /></span><strong>{item.title}</strong></div>
-              <p>{item.desc}</p>
-              <div className="hf-suggestion-steps">
-                {item.steps.map((step, index) => <span key={step}><b>{index + 1}</b>{step}</span>)}
+          <div className={`hf-right-column${showWishPool ? ' has-wish-pool' : ''}`}>
+            <aside className="hf-suggestion-panel">
+              <div className="hf-panel-head"><div><h2 className="hf-heading-with-icon"><HfIcon name="sparkles" size={17} />AI 自动化建议</h2><p>根据近 30 天页面操作记录识别，优先沉淀重复高、耗时集中的动作链路。</p></div><span className="hf-panel-count">9 条</span></div>
+              <div className="hf-saving"><div><small>人均每周可释放</small><strong>2.1 小时</strong></div><span>2.1H<br />每周</span></div>
+              {visibleSuggestions.map((item) => (
+                <article className="hf-suggestion-card" key={item.title}>
+                  <div className="hf-suggestion-title"><span><HfIcon name={item.icon} size={15} /></span><strong>{item.title}</strong></div>
+                  <p>{item.desc}</p>
+                  <div className="hf-suggestion-steps">
+                    {item.steps.map((step, index) => <span key={step}><b>{index + 1}</b>{step}</span>)}
+                  </div>
+                  <div className="hf-suggestion-meta"><span>↻ {item.repeat}</span><span><HfIcon name="clock" size={12} />{item.saving}</span></div>
+                  <button type="button" onClick={() => notify(`已准备创建：${item.title}`)}>创建自动化 <span aria-hidden="true">→</span></button>
+                </article>
+              ))}
+              <div className="hf-suggestion-pagination">
+                <button type="button" aria-label="上一页" disabled={suggestionPage === 1} onClick={() => setSuggestionPage((page) => Math.max(1, page - 1))}>←</button>
+                <span>{suggestionPage} / {suggestionPages}</span>
+                <button type="button" aria-label="下一页" disabled={suggestionPage === suggestionPages} onClick={() => setSuggestionPage((page) => Math.min(suggestionPages, page + 1))}>→</button>
               </div>
-              <div className="hf-suggestion-meta"><span>↻ {item.repeat}</span><span><HfIcon name="clock" size={12} />{item.saving}</span></div>
-              <button type="button" onClick={() => notify(`已准备创建：${item.title}`)}>创建自动化 <span aria-hidden="true">→</span></button>
-            </article>
-          ))}
-          <div className="hf-suggestion-pagination">
-            <button type="button" aria-label="上一页" disabled={suggestionPage === 1} onClick={() => setSuggestionPage((page) => Math.max(1, page - 1))}>←</button>
-            <span>{suggestionPage} / {suggestionPages}</span>
-            <button type="button" aria-label="下一页" disabled={suggestionPage === suggestionPages} onClick={() => setSuggestionPage((page) => Math.min(suggestionPages, page + 1))}>→</button>
+            </aside>
+            {showWishPool && (
+              <section className="hf-wish-pool hf-wish-pool-side" aria-labelledby="hf-wish-pool-title">
+                <div className="hf-wish-pool-head">
+                  <div>
+                    <span><HfIcon name="sparkles" size={17} /></span>
+                    <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>暂时无法直接串联成技能，请标记你是否有需求。</p></div>
+                  </div>
+                  <button type="button" onClick={() => notify('已打开新愿望提交入口')}>＋ 提交新愿望</button>
+                </div>
+                <div className="hf-wish-list">
+                  {wishItems.map((wish) => {
+                    const voted = votedWishes.includes(wish.id)
+                    return (
+                      <article className={voted ? 'is-voted' : ''} key={wish.id}>
+                        <span className="hf-wish-icon"><HfIcon name={wish.icon} size={17} /></span>
+                        <div>
+                          <strong>{wish.title}</strong>
+                          <p>{wish.desc}</p>
+                          <small>{wish.reason}</small>
+                        </div>
+                        <button type="button" aria-pressed={voted} onClick={() => toggleWishVote(wish.id, wish.title)}>
+                          <span aria-hidden="true">{voted ? '✓' : '○'}</span>
+                          <strong>{voted ? '有需求' : '无需求'}</strong>
+                        </button>
+                      </article>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
           </div>
-          </aside>
         </div>
-        {showWishPool && (
-          <section className="hf-wish-pool" aria-labelledby="hf-wish-pool-title">
-            <div className="hf-wish-pool-head">
-              <div>
-                <span><HfIcon name="sparkles" size={17} /></span>
-                <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>这些高频工作暂时无法直接串联成技能，请标记你是否有需求。</p></div>
-              </div>
-              <button type="button" onClick={() => notify('已打开新愿望提交入口')}>＋ 提交新愿望</button>
-            </div>
-            <div className="hf-wish-list">
-              {wishItems.map((wish) => {
-                const voted = votedWishes.includes(wish.id)
-                return (
-                  <article className={voted ? 'is-voted' : ''} key={wish.id}>
-                    <span className="hf-wish-icon"><HfIcon name={wish.icon} size={17} /></span>
-                    <div>
-                      <strong>{wish.title}</strong>
-                      <p>{wish.desc}</p>
-                      <small>{wish.reason}</small>
-                    </div>
-                    <button type="button" aria-pressed={voted} onClick={() => toggleWishVote(wish.id, wish.title)}>
-                      <span aria-hidden="true">{voted ? '✓' : '○'}</span>
-                      <strong>{voted ? '有需求' : '无需求'}</strong>
-                    </button>
-                  </article>
-                )
-              })}
-            </div>
-          </section>
-        )}
       </div>
       {!hideBottomBar && (
         <div className="hf-bottom-bar">
