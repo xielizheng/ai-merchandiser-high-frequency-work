@@ -678,9 +678,11 @@ function HighFrequencyWorkspace({
 }
 
 function HighFrequencySurface({
+  hideBottomBar = false,
   navigate,
   notify,
 }: {
+  hideBottomBar?: boolean
   navigate: (path: string) => void
   notify: (message: string) => void
 }) {
@@ -926,10 +928,12 @@ function HighFrequencySurface({
           </aside>
         </div>
       </div>
-      <div className="hf-bottom-bar">
-        <span><i /> {activeWorkItems.length} 项{activeFocus}事项已就绪，{activeFocusDetail.boundary}</span>
-        <div><button type="button" onClick={() => notify(`正在设置${activeFocus}场景自动执行`)}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" onClick={() => notify(`AI 正在准备处理${activeFocus}场景全部事项`)}><HfIcon name="sparkles" size={15} />AI 一键处理全部</button></div>
-      </div>
+      {!hideBottomBar && (
+        <div className="hf-bottom-bar">
+          <span><i /> {activeWorkItems.length} 项{activeFocus}事项已就绪，{activeFocusDetail.boundary}</span>
+          <div><button type="button" onClick={() => notify(`正在设置${activeFocus}场景自动执行`)}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" onClick={() => notify(`AI 正在准备处理${activeFocus}场景全部事项`)}><HfIcon name="sparkles" size={15} />AI 一键处理全部</button></div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1042,12 +1046,13 @@ function EmbeddedDailyReport({
               </button>
             </section>
 
-            <section className="daily-high-frequency-section" aria-label="高频工作">
+            <section className="daily-high-frequency-section" aria-labelledby="daily-high-frequency-heading">
               <div className="daily-high-frequency-head">
+                <h2 id="daily-high-frequency-heading">每日高频事项</h2>
                 <span className="daily-hf-update">今日更新 · 10 项</span>
               </div>
               <div className="daily-report-high-frequency">
-                <HighFrequencySurface navigate={navigate} notify={notify} />
+                <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} />
               </div>
             </section>
           </section>

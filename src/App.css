@@ -4014,8 +4014,15 @@ button:disabled {
   padding: 0 2px 12px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 18px;
+}
+
+.daily-high-frequency-head h2 {
+  margin: 0;
+  color: #2a303c;
+  font-size: 14px;
+  line-height: 1.35;
 }
 
 .daily-hf-update {
@@ -4223,33 +4230,6 @@ button:disabled {
   border-color: #bcb5ff;
   color: #5145d7;
   background: #f5f3ff;
-}
-
-.daily-report-high-frequency .hf-bottom-bar {
-  position: static;
-  margin-top: 9px;
-  border: 1px solid #e3e6ed;
-  border-radius: 9px;
-  box-shadow: none;
-}
-
-.daily-report-high-frequency .hf-bottom-bar button:hover {
-  border-color: #bcb5ff;
-  color: #5145d7;
-  background: #f8f7ff;
-}
-
-.daily-report-high-frequency .hf-bottom-bar button.is-primary {
-  border-color: #6458f5;
-  color: #fff;
-  background: #6458f5;
-  box-shadow: 0 5px 12px rgba(81, 69, 215, 0.14);
-}
-
-.daily-report-high-frequency .hf-bottom-bar button.is-primary:hover {
-  border-color: #5145d7;
-  color: #fff;
-  background: #5145d7;
 }
 
 @media (max-width: 1180px) {
