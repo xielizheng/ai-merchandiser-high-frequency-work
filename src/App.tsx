@@ -345,9 +345,12 @@ const priceRequirement: TaskRequirement = {
 
 const publicSiteBase = '/ai-merchandiser-high-frequency-work'
 const embeddedReportView = 'daily-report-embedded'
+const dailyWorkflowView = 'daily-workflow'
 
 function getAppRoute() {
-  if (new URLSearchParams(window.location.search).get('view') === embeddedReportView) return '/daily-report-embedded'
+  const requestedView = new URLSearchParams(window.location.search).get('view')
+  if (requestedView === embeddedReportView) return '/daily-report-embedded'
+  if (requestedView === dailyWorkflowView) return '/daily-workflow'
   const currentPath = window.location.pathname
   if (currentPath === publicSiteBase || currentPath === `${publicSiteBase}/`) return '/daily-execution'
   if (currentPath.startsWith(`${publicSiteBase}/`)) return currentPath.slice(publicSiteBase.length) || '/daily-execution'
@@ -371,15 +374,22 @@ function App() {
   }, [])
 
   useEffect(() => {
-    document.title = path.includes('/daily-report-embedded')
-      ? '经营日报 · AI 经营中心'
-      : '高频工作 · AI 经营中心'
+    document.title = path.includes('/daily-workflow')
+      ? '今日高频工作流 · AI 经营中心'
+      : path.includes('/daily-report-embedded')
+        ? '经营日报 · AI 经营中心'
+        : '高频工作 · AI 经营中心'
   }, [path])
 
   const navigate = (nextPath: string) => {
     const isPublicSite = window.location.pathname.startsWith(publicSiteBase)
-    const targetPath = isPublicSite && nextPath === '/daily-report-embedded'
-      ? `${publicSiteBase}/?view=${embeddedReportView}`
+    const publicView = nextPath === '/daily-report-embedded'
+      ? embeddedReportView
+      : nextPath === '/daily-workflow'
+        ? dailyWorkflowView
+        : null
+    const targetPath = isPublicSite && publicView
+      ? `${publicSiteBase}/?view=${publicView}`
       : isPublicSite ? `${publicSiteBase}${nextPath}` : nextPath
     window.history.pushState({}, '', targetPath)
     setPath(nextPath)
@@ -415,7 +425,9 @@ function App() {
 
   return (
     <>
-      {path.includes('/daily-report-embedded') ? (
+      {path.includes('/daily-workflow') ? (
+        <EmbeddedDailyReport navigate={navigate} notify={notify} workflowMode />
+      ) : path.includes('/daily-report-embedded') ? (
         <EmbeddedDailyReport navigate={navigate} notify={notify} />
       ) : path.includes('/daily-execution/local') ? (
         <DailyExecution
@@ -939,12 +951,299 @@ function HighFrequencySurface({
   )
 }
 
+type DailyWorkflowTask = {
+  id: string
+  time: string
+  stage: '上午' | '下午' | '收尾'
+  scene: string
+  icon: HfIconName
+  title: string
+  desc: string
+  aiMinutes: number
+  savedMinutes: number
+  boundary: string
+  selected: boolean
+}
+
+const dailyWorkflowTasks: DailyWorkflowTask[] = [
+  {
+    id: 'product-audit',
+    time: '09:00',
+    stage: '上午',
+    scene: '商品',
+    icon: 'package',
+    title: '商品状态巡检',
+    desc: '核查床垫组在售 SKU 的上下柜、主图、类目与基础信息，整理异常清单。',
+    aiMinutes: 6,
+    savedMinutes: 42,
+    boundary: '只读巡检',
+    selected: true,
+  },
+  {
+    id: 'price-follow',
+    time: '09:40',
+    stage: '上午',
+    scene: '价格',
+    icon: 'tag',
+    title: '价格异常核查与跟价草稿',
+    desc: '汇总站内外价格与历史价，识别价高商品并生成跟价建议，调价提交前停留确认。',
+    aiMinutes: 8,
+    savedMinutes: 55,
+    boundary: '调价前确认',
+    selected: true,
+  },
+  {
+    id: 'inventory-plan',
+    time: '10:35',
+    stage: '上午',
+    scene: '采购',
+    icon: 'warehouse',
+    title: '库存补货量测算',
+    desc: '结合销量、周转天数与现货库存计算建议采购量，生成补货单草稿。',
+    aiMinutes: 7,
+    savedMinutes: 48,
+    boundary: '建单前确认',
+    selected: true,
+  },
+  {
+    id: 'supplier-check',
+    time: '11:20',
+    stage: '上午',
+    scene: '商家',
+    icon: 'users',
+    title: '供应商资质到期核查',
+    desc: '识别营业执照、品牌授权和商品线资质缺失项，生成待补材料清单。',
+    aiMinutes: 5,
+    savedMinutes: 36,
+    boundary: '仅生成清单',
+    selected: false,
+  },
+  {
+    id: 'promotion-submit',
+    time: '14:00',
+    stage: '下午',
+    scene: '营销',
+    icon: 'megaphone',
+    title: '单品促销提报',
+    desc: '核查已有促销与价格条件，按常用配置预填活动信息并生成提报草稿。',
+    aiMinutes: 9,
+    savedMinutes: 62,
+    boundary: '提报前确认',
+    selected: true,
+  },
+  {
+    id: 'image-maintenance',
+    time: '15:10',
+    stage: '下午',
+    scene: '商品',
+    icon: 'image',
+    title: '批量维护商品主图',
+    desc: '批量查询主图、生成营销素材并绑定目标 SKU，素材提交前逐项确认。',
+    aiMinutes: 10,
+    savedMinutes: 68,
+    boundary: '素材提交前确认',
+    selected: true,
+  },
+  {
+    id: 'daily-review',
+    time: '16:30',
+    stage: '收尾',
+    scene: '数据',
+    icon: 'receipt',
+    title: '经营数据复盘与日报归档',
+    desc: '汇总今日风险处理、机会跟进与执行结果，生成床垫组经营复盘。',
+    aiMinutes: 5,
+    savedMinutes: 39,
+    boundary: '归档前确认',
+    selected: true,
+  },
+]
+
+function DailyWorkflowPanel({ notify }: { notify: (message: string) => void }) {
+  const [selectedIds, setSelectedIds] = useState(() => dailyWorkflowTasks.filter((task) => task.selected).map((task) => task.id))
+  const [completedIds, setCompletedIds] = useState<string[]>([])
+  const [executing, setExecuting] = useState(false)
+  const [runningId, setRunningId] = useState<string | null>(null)
+  const stages: DailyWorkflowTask['stage'][] = ['上午', '下午', '收尾']
+  const selectedTasks = useMemo(
+    () => dailyWorkflowTasks.filter((task) => selectedIds.includes(task.id)),
+    [selectedIds],
+  )
+  const totalAiMinutes = selectedTasks.reduce((total, task) => total + task.aiMinutes, 0)
+  const totalSavedMinutes = selectedTasks.reduce((total, task) => total + task.savedMinutes, 0)
+
+  const toggleTask = (task: DailyWorkflowTask) => {
+    if (executing) return
+    setSelectedIds((current) => current.includes(task.id)
+      ? current.filter((id) => id !== task.id)
+      : [...current, task.id])
+  }
+
+  const executeSelected = () => {
+    if (!selectedTasks.length || executing) {
+      if (!selectedTasks.length) notify('请至少勾选一项高频工作')
+      return
+    }
+    setExecuting(true)
+    setRunningId(selectedTasks[0].id)
+    notify(`AI 正在按顺序执行 ${selectedTasks.length} 项高频工作`)
+    window.setTimeout(() => {
+      setCompletedIds(selectedTasks.map((task) => task.id))
+      setRunningId(null)
+      setExecuting(false)
+      notify(`已完成 ${selectedTasks.length} 项工作，结果均停留在确认边界前`)
+    }, 1600)
+  }
+
+  const formatSavedTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60)
+    const rest = minutes % 60
+    return `${hours} 小时${rest ? ` ${rest} 分钟` : ''}`
+  }
+
+  return (
+    <section className="day-flow" aria-label="今日高频工作执行链">
+      <header className="day-flow-intro">
+        <div>
+          <h3>把今天的高频工作串成一条执行链</h3>
+          <p>AI 已按真实操作顺序完成编排。勾选代表本次确认执行，取消后不会进入执行队列。</p>
+        </div>
+        <div className="day-flow-batch-actions">
+          <button
+            type="button"
+            disabled={executing || selectedIds.length === dailyWorkflowTasks.length}
+            onClick={() => setSelectedIds(dailyWorkflowTasks.map((task) => task.id))}
+          >
+            全部勾选
+          </button>
+          <button
+            type="button"
+            disabled={executing || selectedIds.length === 0}
+            onClick={() => setSelectedIds([])}
+          >
+            取消全部
+          </button>
+        </div>
+      </header>
+
+      <div className="day-flow-overview">
+        <div className="day-flow-progress" aria-label="执行进度">
+          {stages.map((stage, index) => {
+            const stageTasks = dailyWorkflowTasks.filter((task) => task.stage === stage)
+            const selectedCount = stageTasks.filter((task) => selectedIds.includes(task.id)).length
+            return (
+              <div className={selectedCount ? 'is-active' : ''} key={stage}>
+                <span>{index + 1}</span>
+                <strong>{stage}</strong>
+                <small>{selectedCount}/{stageTasks.length} 项已确认</small>
+              </div>
+            )
+          })}
+        </div>
+        <div className="day-flow-overview-stats">
+          <span>已确认<strong>{selectedTasks.length} 项</strong></span>
+          <span>AI 预计执行<strong>{totalAiMinutes} 分钟</strong></span>
+          <span>预计释放人工<strong>{formatSavedTime(totalSavedMinutes)}</strong></span>
+        </div>
+      </div>
+
+      <div className="day-flow-layout">
+        <div className="day-flow-schedule">
+          {stages.map((stage) => {
+            const stageTasks = dailyWorkflowTasks.filter((task) => task.stage === stage)
+            return (
+              <section className="day-flow-stage" key={stage} aria-labelledby={`day-flow-${stage}`}>
+                <header>
+                  <h4 id={`day-flow-${stage}`}>{stage}</h4>
+                  <span>{stageTasks[0].time} 开始 · {stageTasks.length} 项</span>
+                </header>
+                <div className="day-flow-task-list">
+                  {stageTasks.map((task) => {
+                    const selected = selectedIds.includes(task.id)
+                    const completed = completedIds.includes(task.id)
+                    const running = runningId === task.id
+                    return (
+                      <article className={`day-flow-task${selected ? ' is-selected' : ' is-cancelled'}${completed ? ' is-completed' : ''}`} key={task.id}>
+                        <label className="day-flow-check">
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            disabled={executing}
+                            onChange={() => toggleTask(task)}
+                            aria-label={`${selected ? '取消' : '确认'}执行${task.title}`}
+                          />
+                          <span><HfIcon name="check" size={14} /></span>
+                        </label>
+                        <time>{task.time}</time>
+                        <span className="day-flow-task-icon"><HfIcon name={task.icon} size={17} /></span>
+                        <div className="day-flow-task-copy">
+                          <div>
+                            <strong>{task.title}</strong>
+                            <em>{task.scene}</em>
+                            <b>{task.boundary}</b>
+                          </div>
+                          <p>{task.desc}</p>
+                          <small>AI 约 {task.aiMinutes} 分钟 · 可节省 {task.savedMinutes} 分钟</small>
+                        </div>
+                        <div className="day-flow-task-state" aria-live="polite">
+                          <span>{completed ? '已完成' : running ? '执行中' : selected ? '已确认' : '已取消'}</span>
+                          <button type="button" disabled={executing} onClick={() => toggleTask(task)}>
+                            {selected ? '取消' : '恢复'}
+                          </button>
+                        </div>
+                      </article>
+                    )
+                  })}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+
+        <aside className="day-flow-review">
+          <div className="day-flow-review-head">
+            <span><HfIcon name="sparkles" size={17} /></span>
+            <div><strong>本次执行清单</strong><small>按时间顺序依次执行</small></div>
+            <em>{selectedTasks.length} 项</em>
+          </div>
+          <div className="day-flow-review-list">
+            {selectedTasks.length ? selectedTasks.map((task) => (
+              <div key={task.id}>
+                <span>{task.time}</span>
+                <strong>{task.title}</strong>
+                <button type="button" aria-label={`从执行清单移除${task.title}`} disabled={executing} onClick={() => toggleTask(task)}>×</button>
+              </div>
+            )) : <p>暂未选择事项，请从左侧勾选需要执行的工作。</p>}
+          </div>
+          <div className="day-flow-guardrails">
+            <strong>执行说明</strong>
+            <span><i>✓</i>查询、测算和草稿生成由 AI 自动完成</span>
+            <span><i>✓</i>调价、建单、提报等动作提交前仍需确认</span>
+            <span><i>✓</i>取消的事项不会写入任务或触发操作</span>
+          </div>
+          <div className="day-flow-review-total">
+            <span>预计完成<strong>{totalAiMinutes} 分钟</strong></span>
+            <span>释放人工<strong>{formatSavedTime(totalSavedMinutes)}</strong></span>
+          </div>
+          <button className="day-flow-execute" type="button" disabled={!selectedTasks.length || executing} onClick={executeSelected}>
+            <HfIcon name={executing ? 'clock' : 'sparkles'} size={17} />
+            {executing ? 'AI 正在按顺序执行…' : `AI 一键执行 ${selectedTasks.length} 项`}
+          </button>
+          <p className="day-flow-review-note">执行结果会回写至对应业务页面，并保留完整操作记录。</p>
+        </aside>
+      </div>
+    </section>
+  )
+}
+
 function EmbeddedDailyReport({
   navigate,
   notify,
+  workflowMode = false,
 }: {
   navigate: (path: string) => void
   notify: (message: string) => void
+  workflowMode?: boolean
 }) {
   const reportRisks: Array<{ icon: HfIconName; title: string; badge: string; desc: string; value: string; tone: string }> = [
     { icon: 'tag', title: '价高预警', badge: '实时事件', desc: '重点货盘价高商品已持续超过 2 小时，请及时处理，避免影响前台价格心智。', value: '1 个商品待处理', tone: 'cyan' },
@@ -1054,11 +1353,15 @@ function EmbeddedDailyReport({
             <section className="daily-high-frequency-section" aria-labelledby="daily-high-frequency-heading">
               <div className="daily-high-frequency-head">
                 <h2 id="daily-high-frequency-heading">每日高频事项</h2>
-                <span className="daily-hf-update">今日更新 · 10 项</span>
+                <span className="daily-hf-update">{workflowMode ? '已编排 · 6 / 7 项' : '今日更新 · 10 项'}</span>
               </div>
-              <div className="daily-report-high-frequency">
-                <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} suggestionPageSize={4} />
-              </div>
+              {workflowMode ? (
+                <DailyWorkflowPanel notify={notify} />
+              ) : (
+                <div className="daily-report-high-frequency">
+                  <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} suggestionPageSize={4} />
+                </div>
+              )}
             </section>
           </section>
         </main>
