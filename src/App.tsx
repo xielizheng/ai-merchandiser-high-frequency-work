@@ -693,15 +693,25 @@ function HighFrequencySurface({
   hideBottomBar = false,
   navigate,
   notify,
+  showWishPool = true,
   suggestionPageSize = 3,
 }: {
   hideBottomBar?: boolean
   navigate: (path: string) => void
   notify: (message: string) => void
+  showWishPool?: boolean
   suggestionPageSize?: number
 }) {
   const [suggestionPage, setSuggestionPage] = useState(1)
   const [activeFocus, setActiveFocus] = useState('商品')
+  const [hiddenWorkItems, setHiddenWorkItems] = useState<string[]>([])
+  const [selectedWorkItems, setSelectedWorkItems] = useState<string[]>([
+    '/work-menu/batch-shop-category',
+    '/work-menu/virtual-bundle',
+    '/work-menu/product-image-assets',
+    '/work-menu/series-shelf',
+  ])
+  const [votedWishes, setVotedWishes] = useState<string[]>(['price-contract'])
   const focusItems: Array<{ icon: HfIconName; title: string; desc: string; items: string; count: string; time: string; status: string }> = [
     { icon: 'package', title: '商品', desc: '批量改店铺分类、创建虚拟组套、维护商品图片', items: '4项', count: '18', time: '5.7H', status: '进行中' },
     { icon: 'store', title: '商家', desc: '核查供应商经营资质、更新商品线资质', items: '3项', count: '7', time: '54分钟', status: '待开始' },
@@ -835,7 +845,35 @@ function HighFrequencySurface({
     数据: { saving: '48分钟', samples: '6次', boundary: '只读/导出前确认' },
   }
   const activeWorkItems = workItems.filter((item) => item.scene === activeFocus)
+  const visibleWorkItems = activeWorkItems.filter((item) => !hiddenWorkItems.includes(item.menuPath))
+  const selectedVisibleWorkItems = visibleWorkItems.filter((item) => selectedWorkItems.includes(item.menuPath))
   const activeFocusDetail = focusDetails[activeFocus]
+  const wishItems = [
+    {
+      id: 'price-contract',
+      icon: 'receipt' as HfIconName,
+      title: '供应商报价与合同条款联动',
+      desc: '报价议价完成后，自动比对合同价、返利和账期条款并生成差异清单。',
+      reason: '涉及合同系统，暂未开放写入接口',
+      votes: 128,
+    },
+    {
+      id: 'competitor-price',
+      icon: 'search' as HfIconName,
+      title: '跨平台竞品价格持续跟踪',
+      desc: '按重点 SKU 自动收集外部平台到手价，识别价格窗口并生成跟价建议。',
+      reason: '外部价格口径仍需进一步校准',
+      votes: 96,
+    },
+    {
+      id: 'after-sale-insight',
+      icon: 'sparkles' as HfIconName,
+      title: '售后问题反向驱动商品优化',
+      desc: '聚合退换货和客服问题，将高频反馈自动转成商品信息与运营优化建议。',
+      reason: '需要打通售后问题与商品操作链路',
+      votes: 73,
+    },
+  ]
   const suggestions: Array<{ icon: HfIconName; title: string; desc: string; steps: string[]; repeat: string; saving: string }> = [
     { icon: 'megaphone', title: '提报单品促销', desc: '围绕目标 SKU 的单品促销提报，核查已有促销与价格条件后补齐活动信息。', steps: ['查促销', '看价格', '浏览入口'], repeat: '4 次', saving: '234.3 分钟' },
     { icon: 'megaphone', title: '创建处理单品促销', desc: '浏览配置后创建促销，核查创建任务或促销记录，并支持批量暂停。', steps: ['浏览配置', '创建促销', '查任务状态'], repeat: '9 次', saving: '142.2 分钟' },
@@ -849,6 +887,27 @@ function HighFrequencySurface({
   ]
   const visibleSuggestions = suggestions.slice((suggestionPage - 1) * suggestionPageSize, suggestionPage * suggestionPageSize)
   const suggestionPages = Math.ceil(suggestions.length / suggestionPageSize)
+  const selectFocus = (focus: string) => {
+    setActiveFocus(focus)
+    const nextItems = workItems.filter((item) => item.scene === focus && !hiddenWorkItems.includes(item.menuPath))
+    setSelectedWorkItems(nextItems.map((item) => item.menuPath))
+    notify(`${focus}场景已选中`)
+  }
+  const toggleWorkItem = (menuPath: string) => {
+    setSelectedWorkItems((current) => current.includes(menuPath)
+      ? current.filter((path) => path !== menuPath)
+      : [...current, menuPath])
+  }
+  const hideWorkItem = (menuPath: string, title: string) => {
+    setHiddenWorkItems((current) => current.includes(menuPath) ? current : [...current, menuPath])
+    setSelectedWorkItems((current) => current.filter((path) => path !== menuPath))
+    notify(`本次已隐藏：${title}`)
+  }
+  const toggleWishVote = (wishId: string, title: string) => {
+    const voted = votedWishes.includes(wishId)
+    setVotedWishes((current) => voted ? current.filter((id) => id !== wishId) : [...current, wishId])
+    notify(voted ? `已取消投票：${title}` : `已投票：${title}`)
+  }
 
   return (
     <div className="hf-surface">
@@ -867,7 +926,7 @@ function HighFrequencySurface({
           </div>
           <div className="hf-focus-cards">
             {focusItems.map((item) => (
-              <button className={`hf-focus-card${activeFocus === item.title ? ' is-active' : ''}`} key={item.title} type="button" aria-pressed={activeFocus === item.title} onClick={() => { setActiveFocus(item.title); notify(`${item.title}场景已选中`) }}>
+              <button className={`hf-focus-card${activeFocus === item.title ? ' is-active' : ''}`} key={item.title} type="button" aria-pressed={activeFocus === item.title} onClick={() => selectFocus(item.title)}>
                 <div className="hf-card-top"><span className="hf-card-icon"><HfIcon name={item.icon} size={17} /></span><em>{item.status}</em></div>
                 <strong>{item.title}</strong>
                 <p>{item.desc}</p>
@@ -879,13 +938,35 @@ function HighFrequencySurface({
           <div className="hf-action-summary" key={activeFocus} aria-live="polite">
             <div className="hf-action-summary-head">
               <h3>AI 可一键操作的具体事项</h3>
-              <span>{activeFocus}场景 · {activeWorkItems.length} 项</span>
+              <div className="hf-action-summary-tools">
+                <span>{activeFocus}场景 · 已选 {selectedVisibleWorkItems.length} / {visibleWorkItems.length} 项</span>
+                <button
+                  type="button"
+                  disabled={!visibleWorkItems.length}
+                  onClick={() => setSelectedWorkItems((current) => {
+                    const visiblePaths = visibleWorkItems.map((item) => item.menuPath)
+                    const allSelected = visiblePaths.every((path) => current.includes(path))
+                    return allSelected
+                      ? current.filter((path) => !visiblePaths.includes(path))
+                      : [...new Set([...current, ...visiblePaths])]
+                  })}
+                >
+                  {visibleWorkItems.length > 0 && selectedVisibleWorkItems.length === visibleWorkItems.length ? '取消全选' : '全选'}
+                </button>
+              </div>
             </div>
-            <div className="hf-summary-grid"><span>待处理事项<strong>{activeWorkItems.length}项</strong></span><span>可节省耗时<strong>{activeFocusDetail.saving}</strong></span><span>操作样本<strong>{activeFocusDetail.samples}</strong></span></div>
+            <div className="hf-summary-grid"><span>本次已选<strong>{selectedVisibleWorkItems.length}项</strong></span><span>可节省耗时<strong>{activeFocusDetail.saving}</strong></span><span>操作样本<strong>{activeFocusDetail.samples}</strong></span></div>
             <div className="hf-work-list">
-              {activeWorkItems.map((item, index) => (
-                <article className="hf-work-group" key={item.title}>
+              {visibleWorkItems.map((item, index) => {
+                const selected = selectedWorkItems.includes(item.menuPath)
+                return (
+                <article className={`hf-work-group${selected ? ' is-selected' : ''}`} key={item.title}>
+                  <button className="hf-work-close" type="button" aria-label={`本次不再显示${item.title}`} title="本次不再显示" onClick={() => hideWorkItem(item.menuPath, item.title)}>×</button>
                   <div className="hf-work-heading">
+                    <label className="hf-work-select">
+                      <input type="checkbox" checked={selected} onChange={() => toggleWorkItem(item.menuPath)} aria-label={`选择${item.title}`} />
+                      <span><HfIcon name="check" size={13} /></span>
+                    </label>
                     <span className="hf-operation-index">{index + 1}</span>
                     <div>
                       <a
@@ -914,7 +995,15 @@ function HighFrequencySurface({
                     </div>
                   </div>
                 </article>
-              ))}
+                )
+              })}
+              {!visibleWorkItems.length && (
+                <div className="hf-work-empty">
+                  <span><HfIcon name="check" size={18} /></span>
+                  <strong>本场景卡片已全部关闭</strong>
+                  <p>本次访问将不再展示，刷新页面后可重新查看。</p>
+                </div>
+              )}
             </div>
           </div>
           </section>
@@ -940,11 +1029,42 @@ function HighFrequencySurface({
           </div>
           </aside>
         </div>
+        {showWishPool && (
+          <section className="hf-wish-pool" aria-labelledby="hf-wish-pool-title">
+            <div className="hf-wish-pool-head">
+              <div>
+                <span><HfIcon name="sparkles" size={17} /></span>
+                <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>这些高频工作暂时无法直接串联成技能，投票帮助我们优先建设。</p></div>
+              </div>
+              <button type="button" onClick={() => notify('已打开新愿望提交入口')}>＋ 提交新愿望</button>
+            </div>
+            <div className="hf-wish-list">
+              {wishItems.map((wish) => {
+                const voted = votedWishes.includes(wish.id)
+                return (
+                  <article className={voted ? 'is-voted' : ''} key={wish.id}>
+                    <span className="hf-wish-icon"><HfIcon name={wish.icon} size={17} /></span>
+                    <div>
+                      <strong>{wish.title}</strong>
+                      <p>{wish.desc}</p>
+                      <small>{wish.reason}</small>
+                    </div>
+                    <button type="button" aria-pressed={voted} onClick={() => toggleWishVote(wish.id, wish.title)}>
+                      <span aria-hidden="true">▲</span>
+                      <strong>{wish.votes + (voted && wish.id !== 'price-contract' ? 1 : 0)}</strong>
+                      <small>{voted ? '已投票' : '我需要'}</small>
+                    </button>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+        )}
       </div>
       {!hideBottomBar && (
         <div className="hf-bottom-bar">
-          <span><i /> {activeWorkItems.length} 项{activeFocus}事项已就绪，{activeFocusDetail.boundary}</span>
-          <div><button type="button" onClick={() => notify(`正在设置${activeFocus}场景自动执行`)}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" onClick={() => notify(`AI 正在准备处理${activeFocus}场景全部事项`)}><HfIcon name="sparkles" size={15} />AI 一键处理全部</button></div>
+          <span><i /> 已选择 {selectedVisibleWorkItems.length} 项{activeFocus}事项，{activeFocusDetail.boundary}</span>
+          <div><button type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`正在将已选 ${selectedVisibleWorkItems.length} 项设为自动执行`)}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`AI 正在按顺序处理已选 ${selectedVisibleWorkItems.length} 项事项`)}><HfIcon name="sparkles" size={15} />AI 一键执行已选 {selectedVisibleWorkItems.length} 项</button></div>
         </div>
       )}
     </div>
@@ -1359,7 +1479,7 @@ function EmbeddedDailyReport({
                 <DailyWorkflowPanel notify={notify} />
               ) : (
                 <div className="daily-report-high-frequency">
-                  <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} suggestionPageSize={4} />
+                  <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} showWishPool={false} suggestionPageSize={4} />
                 </div>
               )}
             </section>
