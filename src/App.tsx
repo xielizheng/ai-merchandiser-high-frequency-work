@@ -670,11 +670,6 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
               <span>总动手 <strong>35.5 小时</strong></span>
             </div>
           </div>
-          <div className="hf-persona-pattern">
-            <span><HfIcon name="sparkles" size={15} />工作规律</span>
-            <strong>上午偏营销<br />下午转商品</strong>
-            <small>推荐会随近期行为持续更新</small>
-          </div>
         </section>
 
         <div className="hf-metrics">
