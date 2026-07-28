@@ -653,6 +653,30 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
   return (
     <div className="hf-surface">
       <div className="hf-scroll-content">
+        <section className="hf-persona-card" aria-label="我的采销画像">
+          <div className="hf-persona-avatar" aria-hidden="true">谢</div>
+          <div className="hf-persona-content">
+            <div className="hf-persona-head">
+              <div><strong>我的采销画像</strong><em>仅本人可见</em></div>
+              <small>基于近 7 天全埋点行为更新</small>
+            </div>
+            <div className="hf-persona-identity"><strong>谢理正</strong><span>家电居家业务部 · 床垫组</span></div>
+            <p><b>商品 + 营销双核心采销：</b>商品维护和促销运营占用时间最多，AI 将优先推荐高频、耗时集中的动作链路。</p>
+            <div className="hf-persona-tags">
+              <span>商品耗时 <strong>42%</strong></span>
+              <span>营销耗时 <strong>40%</strong></span>
+              <span>商家耗时 <strong>9%</strong></span>
+              <span>7 天 <strong>135 个任务</strong></span>
+              <span>总动手 <strong>35.5 小时</strong></span>
+            </div>
+          </div>
+          <div className="hf-persona-pattern">
+            <span><HfIcon name="sparkles" size={15} />工作规律</span>
+            <strong>上午偏营销<br />下午转商品</strong>
+            <small>推荐会随近期行为持续更新</small>
+          </div>
+        </section>
+
         <div className="hf-metrics">
           <div className="hf-metric hf-metric-purple"><span><HfIcon name="calendar" size={20} /></span><div><small>今日待办</small><strong>7 <em>项任务</em></strong></div></div>
           <div className="hf-metric hf-metric-green"><span><HfIcon name="check" size={20} /></span><div><small>AI 可处理</small><strong>4 <em>项任务</em></strong></div></div>
