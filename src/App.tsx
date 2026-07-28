@@ -344,8 +344,10 @@ const priceRequirement: TaskRequirement = {
 }
 
 const publicSiteBase = '/ai-merchandiser-high-frequency-work'
+const embeddedReportView = 'daily-report-embedded'
 
 function getAppRoute() {
+  if (new URLSearchParams(window.location.search).get('view') === embeddedReportView) return '/daily-report-embedded'
   const currentPath = window.location.pathname
   if (currentPath === publicSiteBase || currentPath === `${publicSiteBase}/`) return '/daily-execution'
   if (currentPath.startsWith(`${publicSiteBase}/`)) return currentPath.slice(publicSiteBase.length) || '/daily-execution'
@@ -375,7 +377,10 @@ function App() {
   }, [path])
 
   const navigate = (nextPath: string) => {
-    const targetPath = window.location.pathname.startsWith(publicSiteBase) ? `${publicSiteBase}${nextPath}` : nextPath
+    const isPublicSite = window.location.pathname.startsWith(publicSiteBase)
+    const targetPath = isPublicSite && nextPath === '/daily-report-embedded'
+      ? `${publicSiteBase}/?view=${embeddedReportView}`
+      : isPublicSite ? `${publicSiteBase}${nextPath}` : nextPath
     window.history.pushState({}, '', targetPath)
     setPath(nextPath)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -643,7 +648,7 @@ function HighFrequencyWorkspace({
           <button className="center-sidebar-utility active" type="button" aria-current="page"><span>✦</span>高频工作</button>
           <div className="center-sidebar-history">
             <span>历史记录</span>
-            <button type="button" onClick={() => navigate('/')}>运营日报</button>
+            <button type="button" onClick={() => navigate('/daily-report-embedded')}>运营日报</button>
             <button type="button" onClick={() => notify('正在打开最近一次高频工作')}>最近一次高频工作</button>
             <button type="button" onClick={() => notify('正在打开最近一次高频工作')}>价格场景SOP</button>
           </div>
