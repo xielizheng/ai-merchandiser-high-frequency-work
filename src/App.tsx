@@ -855,7 +855,6 @@ function HighFrequencySurface({
       title: '供应商报价与合同条款联动',
       desc: '报价议价完成后，自动比对合同价、返利和账期条款并生成差异清单。',
       reason: '涉及合同系统，暂未开放写入接口',
-      votes: 128,
     },
     {
       id: 'competitor-price',
@@ -863,7 +862,6 @@ function HighFrequencySurface({
       title: '跨平台竞品价格持续跟踪',
       desc: '按重点 SKU 自动收集外部平台到手价，识别价格窗口并生成跟价建议。',
       reason: '外部价格口径仍需进一步校准',
-      votes: 96,
     },
     {
       id: 'after-sale-insight',
@@ -871,7 +869,6 @@ function HighFrequencySurface({
       title: '售后问题反向驱动商品优化',
       desc: '聚合退换货和客服问题，将高频反馈自动转成商品信息与运营优化建议。',
       reason: '需要打通售后问题与商品操作链路',
-      votes: 73,
     },
   ]
   const suggestions: Array<{ icon: HfIconName; title: string; desc: string; steps: string[]; repeat: string; saving: string }> = [
@@ -906,7 +903,7 @@ function HighFrequencySurface({
   const toggleWishVote = (wishId: string, title: string) => {
     const voted = votedWishes.includes(wishId)
     setVotedWishes((current) => voted ? current.filter((id) => id !== wishId) : [...current, wishId])
-    notify(voted ? `已取消投票：${title}` : `已投票：${title}`)
+    notify(voted ? `已标记无需求：${title}` : `已标记有需求：${title}`)
   }
 
   return (
@@ -1034,7 +1031,7 @@ function HighFrequencySurface({
             <div className="hf-wish-pool-head">
               <div>
                 <span><HfIcon name="sparkles" size={17} /></span>
-                <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>这些高频工作暂时无法直接串联成技能，投票帮助我们优先建设。</p></div>
+                <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>这些高频工作暂时无法直接串联成技能，请标记你是否有需求。</p></div>
               </div>
               <button type="button" onClick={() => notify('已打开新愿望提交入口')}>＋ 提交新愿望</button>
             </div>
@@ -1050,9 +1047,8 @@ function HighFrequencySurface({
                       <small>{wish.reason}</small>
                     </div>
                     <button type="button" aria-pressed={voted} onClick={() => toggleWishVote(wish.id, wish.title)}>
-                      <span aria-hidden="true">▲</span>
-                      <strong>{wish.votes + (voted && wish.id !== 'price-contract' ? 1 : 0)}</strong>
-                      <small>{voted ? '已投票' : '我需要'}</small>
+                      <span aria-hidden="true">{voted ? '✓' : '○'}</span>
+                      <strong>{voted ? '有需求' : '无需求'}</strong>
                     </button>
                   </article>
                 )

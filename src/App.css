@@ -3597,7 +3597,7 @@ button:disabled {
   min-height: 150px;
   padding: 14px;
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) 46px;
+  grid-template-columns: 32px minmax(0, 1fr) 68px;
   align-items: start;
   gap: 10px;
 }
@@ -3645,8 +3645,8 @@ button:disabled {
 }
 
 .hf-wish-list article > button {
-  min-height: 58px;
-  padding: 6px 4px;
+  min-height: 52px;
+  padding: 7px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3667,15 +3667,18 @@ button:disabled {
 }
 
 .hf-wish-list article > button > span {
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cdd7ca;
+  border-radius: 50%;
   font-size: 9px;
 }
 
 .hf-wish-list article > button > strong {
-  font-size: 11px;
-}
-
-.hf-wish-list article > button > small {
-  font-size: 8px;
+  font-size: 9.5px;
+  white-space: nowrap;
 }
 
 .hf-bottom-bar button:disabled {
