@@ -720,7 +720,7 @@ function HighFrequencySurface({
     '/work-menu/sales-inventory-trend',
     '/work-menu/operations-report',
   ])
-  const [wishVotes, setWishVotes] = useState<Record<string, 'up' | 'down'>>({ 'price-contract': 'up' })
+  const [likedWishes, setLikedWishes] = useState<string[]>(['price-contract'])
   const focusItems: Array<{ title: string; items: number }> = [
     { title: '全部', items: 10 },
     { title: '商品', items: 4 },
@@ -866,6 +866,7 @@ function HighFrequencySurface({
       title: '供应商报价与合同条款联动',
       desc: '报价议价完成后，自动比对合同价、返利和账期条款并生成差异清单。',
       reason: '涉及合同系统，暂未开放写入接口',
+      likes: 127,
     },
     {
       id: 'competitor-price',
@@ -873,6 +874,7 @@ function HighFrequencySurface({
       title: '跨平台竞品价格持续跟踪',
       desc: '按重点 SKU 自动收集外部平台到手价，识别价格窗口并生成跟价建议。',
       reason: '外部价格口径仍需进一步校准',
+      likes: 96,
     },
     {
       id: 'after-sale-insight',
@@ -880,6 +882,7 @@ function HighFrequencySurface({
       title: '售后问题反向驱动商品优化',
       desc: '聚合退换货和客服问题，将高频反馈自动转成商品信息与运营优化建议。',
       reason: '需要打通售后问题与商品操作链路',
+      likes: 73,
     },
   ]
   const suggestions: Array<{ icon: HfIconName; title: string; desc: string; steps: string[]; repeat: string; saving: string }> = [
@@ -911,15 +914,10 @@ function HighFrequencySurface({
     setSelectedWorkItems((current) => current.filter((path) => path !== menuPath))
     notify(`本次已隐藏：${title}`)
   }
-  const toggleWishVote = (wishId: string, title: string, vote: 'up' | 'down') => {
-    const selected = wishVotes[wishId] === vote
-    setWishVotes((current) => {
-      const next = { ...current }
-      if (selected) delete next[wishId]
-      else next[wishId] = vote
-      return next
-    })
-    notify(selected ? `已取消反馈：${title}` : `${vote === 'up' ? '已点赞' : '已点踩'}：${title}`)
+  const toggleWishLike = (wishId: string, title: string) => {
+    const liked = likedWishes.includes(wishId)
+    setLikedWishes((current) => liked ? current.filter((id) => id !== wishId) : [...current, wishId])
+    notify(liked ? `已取消点赞：${title}` : `已点赞：${title}`)
   }
 
   return (
@@ -1057,23 +1055,23 @@ function HighFrequencySurface({
                 <div className="hf-wish-pool-head">
                   <div>
                     <span><HfIcon name="sparkles" size={17} /></span>
-                    <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>暂时无法直接串联成技能，可点赞或点踩反馈需求。</p></div>
+                    <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>暂时无法直接串联成技能，可点赞表达需求。</p></div>
                   </div>
                 </div>
                 <div className="hf-wish-list">
                   {wishItems.map((wish) => {
-                    const vote = wishVotes[wish.id]
+                    const liked = likedWishes.includes(wish.id)
                     return (
-                      <article className={vote === 'up' ? 'is-liked' : vote === 'down' ? 'is-disliked' : ''} key={wish.id}>
+                      <article className={liked ? 'is-liked' : ''} key={wish.id}>
                         <span className="hf-wish-icon"><HfIcon name={wish.icon} size={17} /></span>
                         <div>
                           <strong>{wish.title}</strong>
                           <p>{wish.desc}</p>
                           <small>{wish.reason}</small>
                         </div>
-                        <div className="hf-wish-votes" role="group" aria-label={`${wish.title}需求反馈`}>
-                          <button className="is-up" type="button" aria-label={`点赞${wish.title}`} aria-pressed={vote === 'up'} onClick={() => toggleWishVote(wish.id, wish.title, 'up')}><HfIcon name="thumb-up" size={14} /><span>点赞</span></button>
-                          <button className="is-down" type="button" aria-label={`点踩${wish.title}`} aria-pressed={vote === 'down'} onClick={() => toggleWishVote(wish.id, wish.title, 'down')}><HfIcon name="thumb-up" size={14} /><span>点踩</span></button>
+                        <div className="hf-wish-votes" aria-label={`${wish.title}点赞情况`}>
+                          <span><HfIcon name="thumb-up" size={13} />{wish.likes + (liked ? 1 : 0)} 人点赞</span>
+                          <button className="is-up" type="button" aria-label={`点赞${wish.title}`} aria-pressed={liked} onClick={() => toggleWishLike(wish.id, wish.title)}><HfIcon name="thumb-up" size={14} /><span>{liked ? '已点赞' : '点赞'}</span></button>
                         </div>
                       </article>
                     )

@@ -3766,10 +3766,6 @@ button:disabled {
   background: #f6faed;
 }
 
-.hf-wish-list > article.is-disliked {
-  background: #fff9f4;
-}
-
 .hf-wish-icon {
   width: 32px;
   height: 32px;
@@ -3883,13 +3879,23 @@ button:disabled {
 
 .hf-wish-votes {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 7px;
+}
+
+.hf-wish-votes > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #77837b;
+  font-size: 9.5px;
+  white-space: nowrap;
 }
 
 .hf-wish-votes button {
   min-height: 34px;
-  padding: 0 8px;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3914,16 +3920,6 @@ button:disabled {
   border-color: #9fc75b;
   color: #355b2b;
   background: #edf6dc;
-}
-
-.hf-wish-votes button.is-down[aria-pressed='true'] {
-  border-color: #e2b38d;
-  color: #8c4f24;
-  background: #fff0e5;
-}
-
-.hf-wish-votes button.is-down .hf-icon {
-  transform: rotate(180deg);
 }
 
 .hf-bottom-bar button:disabled {
