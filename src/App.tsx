@@ -545,11 +545,11 @@ function WorkMenuPage({
             <button type="button" onClick={() => notify('任务记录模块正在建设中')}><HfIcon name="receipt" size={16} />任务记录</button>
             <button type="button" onClick={() => notify('操作日志模块正在建设中')}><HfIcon name="clock" size={16} />操作日志</button>
           </div>
-          <button className="tool-menu-back" type="button" onClick={() => navigate('/daily-execution')}>← 返回我的高频工作</button>
+          <button className="tool-menu-back" type="button" onClick={() => navigate('/daily-execution')}>← 返回高频工作</button>
         </aside>
 
         <main className="tool-menu-main">
-          <div className="tool-menu-breadcrumb"><button type="button" onClick={() => navigate('/daily-execution')}>我的高频工作</button><span>/</span><span>{page.group}</span><span>/</span><strong>{page.menu}</strong></div>
+          <div className="tool-menu-breadcrumb"><button type="button" onClick={() => navigate('/daily-execution')}>高频工作</button><span>/</span><span>{page.group}</span><span>/</span><strong>{page.menu}</strong></div>
           <header className="tool-menu-header">
             <div>
               <span className="tool-menu-icon"><HfIcon name={page.icon} size={21} /></span>
@@ -632,7 +632,7 @@ function HighFrequencyWorkspace({
           <button className="center-sidebar-utility" type="button" onClick={() => notify('超级运营模块正在建设中')}><span>⌁</span>超级运营</button>
           <button className="center-sidebar-utility" type="button" onClick={() => notify('超级大表模块正在建设中')}><span>▤</span>超级大表</button>
           <button className="center-sidebar-utility" type="button" onClick={() => notify('协同任务模块正在建设中')}><span>♧</span>协同任务</button>
-          <button className="center-sidebar-utility active" type="button" aria-current="page"><span>✦</span>我的高频工作</button>
+          <button className="center-sidebar-utility active" type="button" aria-current="page"><span>✦</span>高频工作</button>
           <div className="center-sidebar-history">
             <span>历史记录</span>
             <button type="button" onClick={() => navigate('/')}>运营日报</button>
@@ -643,7 +643,7 @@ function HighFrequencyWorkspace({
 
         <main className="center-main">
           <div className="center-main-head">
-            <h1>我的高频工作</h1>
+            <h1>高频工作</h1>
             <div className="center-profile-summary" aria-label="近7天采销画像">
               <p><strong>商品 + 营销双核心采销：</strong>商品维护和促销运营占用时间最多，AI 将优先推荐高频、耗时集中的动作链路。</p>
               <div className="center-profile-tags">
@@ -655,7 +655,7 @@ function HighFrequencyWorkspace({
               </div>
             </div>
           </div>
-          <section className="embedded-workspace" aria-label="我的高频工作页面">
+          <section className="embedded-workspace" aria-label="高频工作页面">
             <HighFrequencySurface navigate={navigate} notify={notify} />
           </section>
         </main>
