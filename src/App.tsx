@@ -372,7 +372,7 @@ function App() {
 
   useEffect(() => {
     document.title = path.includes('/daily-report-embedded')
-      ? '运营日报 · AI 经营中心'
+      ? '经营日报 · AI 经营中心'
       : '高频工作 · AI 经营中心'
   }, [path])
 
@@ -648,7 +648,7 @@ function HighFrequencyWorkspace({
           <button className="center-sidebar-utility active" type="button" aria-current="page"><span>✦</span>高频工作</button>
           <div className="center-sidebar-history">
             <span>历史记录</span>
-            <button type="button" onClick={() => navigate('/daily-report-embedded')}>运营日报</button>
+            <button type="button" onClick={() => navigate('/daily-report-embedded')}>经营日报</button>
             <button type="button" onClick={() => notify('正在打开最近一次高频工作')}>最近一次高频工作</button>
             <button type="button" onClick={() => notify('正在打开最近一次高频工作')}>价格场景SOP</button>
           </div>
@@ -993,7 +993,7 @@ function EmbeddedDailyReport({
           <button className="center-sidebar-utility" type="button" onClick={() => navigate('/daily-execution')}><span>✦</span>高频工作</button>
           <div className="center-sidebar-history">
             <span>历史记录</span>
-            <button className="is-current" type="button">运营日报</button>
+            <button className="is-current" type="button">经营日报</button>
             <button type="button" onClick={() => notify('正在打开采购价巡检')}>采购价巡检</button>
             <button type="button" onClick={() => notify('正在打开品类消费趋势')}>品类消费趋势</button>
             <button type="button" onClick={() => notify('正在打开商品基础信息巡检')}>商品基础信息巡检</button>
@@ -1001,15 +1001,19 @@ function EmbeddedDailyReport({
         </aside>
 
         <main className="daily-embed-main">
-          <section className="daily-report-board" aria-label="运营日报">
+          <section className="daily-report-board" aria-label="经营日报">
             <header className="daily-report-header">
               <div className="daily-report-title">
-                <h1>运营日报</h1>
+                <h1>经营日报</h1>
                 <span>2026.7.28</span>
                 <span>已入职 414 天</span>
                 <div className="daily-report-medals" aria-label="工作徽章"><i>价</i><i>品</i><i>采</i><i>营</i><i>数</i><i>商</i></div>
               </div>
-              <button type="button" onClick={() => notify('日报已切换为全屏展示')} aria-label="全屏展示">↗</button>
+              <button type="button" onClick={() => notify('日报已切换为缩小展示')} aria-label="缩小日报" title="缩小展示">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M9 3v6H3M15 3v6h6M9 21v-6H3M15 21v-6h6" />
+                </svg>
+              </button>
             </header>
 
             <section className="daily-signal-section" aria-labelledby="risk-heading">
@@ -1093,7 +1097,7 @@ function DailyReport({ navigate }: { navigate: (path: string) => void }) {
 
         <section className="daily-card">
           <header className="daily-card-head">
-            <h2>运营日报</h2>
+            <h2>经营日报</h2>
             <span>📅 2026.6.30</span>
             <span>床垫组</span>
             <b className="risk">3项风险</b>

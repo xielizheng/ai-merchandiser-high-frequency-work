@@ -3833,6 +3833,18 @@ button:disabled {
   background: #f8f7ff;
 }
 
+.daily-report-header > button svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .daily-signal-section {
   padding: 13px 0 17px;
   border-top: 1px solid #eef0f4;
@@ -4103,6 +4115,11 @@ button:disabled {
 .daily-report-high-frequency .hf-content-grid {
   margin-top: 9px;
   gap: 9px;
+  align-items: stretch;
+}
+
+.daily-report-high-frequency .hf-suggestion-panel {
+  height: 100%;
 }
 
 .daily-report-high-frequency .hf-focus-panel,
