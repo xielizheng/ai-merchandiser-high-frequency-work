@@ -939,7 +939,6 @@ function HighFrequencySurface({
               <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
               {!hideBottomBar && (
                 <div className="hf-panel-actions">
-                  <button type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`正在将已选 ${selectedVisibleWorkItems.length} 项设为自动执行`)}>设为自动执行</button>
                   <button className="is-primary" type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`AI 正在按顺序处理已选 ${selectedVisibleWorkItems.length} 项事项`)}><HfIcon name="sparkles" size={14} />AI 一键执行 {selectedVisibleWorkItems.length} 项</button>
                 </div>
               )}
