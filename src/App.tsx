@@ -1050,16 +1050,6 @@ function EmbeddedDailyReport({
                 </div>
                 <span className="daily-hf-update">今日更新 · 10 项</span>
               </div>
-              <div className="daily-hf-profile">
-                <p><strong>商品 + 营销双核心采销：</strong>商品维护和促销运营占用时间最多，优先推荐高频、耗时集中的动作链路。</p>
-                <div>
-                  <span>商品耗时 <strong>42%</strong></span>
-                  <span>营销耗时 <strong>40%</strong></span>
-                  <span>商家耗时 <strong>9%</strong></span>
-                  <span>7 天 <strong>135 个任务</strong></span>
-                  <span>总动手 <strong>35.5 小时</strong></span>
-                </div>
-              </div>
               <div className="daily-report-high-frequency">
                 <HighFrequencySurface navigate={navigate} notify={notify} />
               </div>
