@@ -652,7 +652,10 @@ function HighFrequencySurface({ notify }: { notify: (message: string) => void })
                       <p>{item.taskDesc}</p>
                       <div className="hf-work-card-meta"><span><HfIcon name="users" size={13} /> {item.stats[0]}</span><span><HfIcon name="receipt" size={13} /> {item.stats[1]}</span><span>☆ {item.stats[2]}</span></div>
                     </div>
-                    <button className="hf-work-action" type="button" onClick={() => notify(`AI 已准备：${item.taskTitle}`)}><HfIcon name="sparkles" size={15} />AI 去操作</button>
+                    <div className="hf-work-actions">
+                      <button className="hf-schedule-action" type="button" onClick={() => notify(`正在设置定时任务：${item.taskTitle}`)}><HfIcon name="clock" size={15} />设置定时任务</button>
+                      <button className="hf-work-action" type="button" onClick={() => notify(`AI 已准备：${item.taskTitle}`)}><HfIcon name="sparkles" size={15} />AI 去操作</button>
+                    </div>
                   </div>
                 </article>
               ))}

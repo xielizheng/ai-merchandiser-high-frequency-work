@@ -2194,11 +2194,20 @@ button:disabled {
 }
 
 .hf-work-action,
+.hf-schedule-action,
 .hf-suggestion-card button,
 .hf-bottom-bar button {
   transition: color 170ms ease, border-color 170ms ease, background-color 170ms ease, box-shadow 170ms ease, transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.hf-work-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.hf-schedule-action,
 .hf-work-action {
   min-height: 38px;
   padding: 0 13px;
@@ -2215,12 +2224,25 @@ button:disabled {
   white-space: nowrap;
 }
 
+.hf-schedule-action {
+  border-color: var(--hf-line-strong);
+  color: #4f5d72;
+  background: #fff;
+}
+
+.hf-schedule-action:hover {
+  border-color: #aab8cd;
+  color: #26364e;
+  background: #f7f9fc;
+}
+
 .hf-work-action:hover {
   border-color: #86a1f7;
   background: var(--hf-blue-soft);
   box-shadow: 0 5px 12px rgba(63, 109, 243, 0.1);
 }
 
+.hf-schedule-action:active,
 .hf-work-action:active,
 .hf-suggestion-card button:active,
 .hf-bottom-bar button:active {
@@ -2562,6 +2584,11 @@ button:disabled {
     flex-direction: column;
   }
 
+  .hf-work-actions {
+    width: 100%;
+  }
+
+  .hf-schedule-action,
   .hf-work-action {
     width: 100%;
     min-height: 44px;
@@ -2609,6 +2636,7 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .hf-focus-card,
   .hf-work-group,
+  .hf-schedule-action,
   .hf-work-action,
   .hf-suggestion-card button,
   .hf-bottom-bar button {
