@@ -73,7 +73,7 @@ type TaskRequirement = {
   submitText: string
 }
 
-type HfIconName = 'calendar' | 'check' | 'clock' | 'package' | 'store' | 'search' | 'megaphone' | 'tag' | 'image' | 'users' | 'warehouse' | 'receipt' | 'sparkles'
+type HfIconName = 'calendar' | 'check' | 'clock' | 'package' | 'store' | 'search' | 'megaphone' | 'tag' | 'image' | 'users' | 'warehouse' | 'receipt' | 'sparkles' | 'thumb-up'
 
 function HfIcon({ name, size = 18 }: { name: HfIconName; size?: number }) {
   let paths
@@ -114,6 +114,9 @@ function HfIcon({ name, size = 18 }: { name: HfIconName; size?: number }) {
       break
     case 'sparkles':
       paths = <><path d="m12 3 1.3 3.7L17 8l-3.7 1.3L12 13l-1.3-3.7L7 8l3.7-1.3L12 3Z" /><path d="m19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14ZM5 13l.7 2.3L8 16l-2.3.7L5 19l-.7-2.3L2 16l2.3-.7L5 13Z" /></>
+      break
+    case 'thumb-up':
+      paths = <><path d="M7 10v11H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3Z" /><path d="M7 20h10.2a2 2 0 0 0 2-1.6l1.3-6A2 2 0 0 0 18.6 10H14l.7-3.5A3 3 0 0 0 12 3l-5 7" /></>
       break
     case 'package':
     default:
@@ -717,7 +720,7 @@ function HighFrequencySurface({
     '/work-menu/sales-inventory-trend',
     '/work-menu/operations-report',
   ])
-  const [votedWishes, setVotedWishes] = useState<string[]>(['price-contract'])
+  const [wishVotes, setWishVotes] = useState<Record<string, 'up' | 'down'>>({ 'price-contract': 'up' })
   const focusItems: Array<{ title: string; items: number }> = [
     { title: '全部', items: 10 },
     { title: '商品', items: 4 },
@@ -908,10 +911,15 @@ function HighFrequencySurface({
     setSelectedWorkItems((current) => current.filter((path) => path !== menuPath))
     notify(`本次已隐藏：${title}`)
   }
-  const toggleWishVote = (wishId: string, title: string) => {
-    const voted = votedWishes.includes(wishId)
-    setVotedWishes((current) => voted ? current.filter((id) => id !== wishId) : [...current, wishId])
-    notify(voted ? `已标记无需求：${title}` : `已标记有需求：${title}`)
+  const toggleWishVote = (wishId: string, title: string, vote: 'up' | 'down') => {
+    const selected = wishVotes[wishId] === vote
+    setWishVotes((current) => {
+      const next = { ...current }
+      if (selected) delete next[wishId]
+      else next[wishId] = vote
+      return next
+    })
+    notify(selected ? `已取消反馈：${title}` : `${vote === 'up' ? '已点赞' : '已点踩'}：${title}`)
   }
 
   return (
@@ -927,7 +935,15 @@ function HighFrequencySurface({
           <section className="hf-focus-panel">
           <div className="hf-panel-head">
             <div><h2>今日重点事项</h2><p>基于页面操作记录识别高频重复流程，把可执行动作停在确认边界前。</p></div>
-            <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
+            <div className="hf-panel-head-side">
+              <div className="hf-legend"><span><i className="is-done" />已完成</span><span><i className="is-active" />进行中</span><span><i className="is-pending" />待开始</span></div>
+              {!hideBottomBar && (
+                <div className="hf-panel-actions">
+                  <button type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`正在将已选 ${selectedVisibleWorkItems.length} 项设为自动执行`)}>设为自动执行</button>
+                  <button className="is-primary" type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`AI 正在按顺序处理已选 ${selectedVisibleWorkItems.length} 项事项`)}><HfIcon name="sparkles" size={14} />AI 一键执行 {selectedVisibleWorkItems.length} 项</button>
+                </div>
+              )}
+            </div>
           </div>
           <nav className="hf-focus-tabs" aria-label="高频工作分类">
             {focusItems.map((item) => (
@@ -1042,25 +1058,24 @@ function HighFrequencySurface({
                 <div className="hf-wish-pool-head">
                   <div>
                     <span><HfIcon name="sparkles" size={17} /></span>
-                    <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>暂时无法直接串联成技能，请标记你是否有需求。</p></div>
+                    <div><h2 id="hf-wish-pool-title">自动化许愿池</h2><p>暂时无法直接串联成技能，可点赞或点踩反馈需求。</p></div>
                   </div>
-                  <button type="button" onClick={() => notify('已打开新愿望提交入口')}>＋ 提交新愿望</button>
                 </div>
                 <div className="hf-wish-list">
                   {wishItems.map((wish) => {
-                    const voted = votedWishes.includes(wish.id)
+                    const vote = wishVotes[wish.id]
                     return (
-                      <article className={voted ? 'is-voted' : ''} key={wish.id}>
+                      <article className={vote === 'up' ? 'is-liked' : vote === 'down' ? 'is-disliked' : ''} key={wish.id}>
                         <span className="hf-wish-icon"><HfIcon name={wish.icon} size={17} /></span>
                         <div>
                           <strong>{wish.title}</strong>
                           <p>{wish.desc}</p>
                           <small>{wish.reason}</small>
                         </div>
-                        <button type="button" aria-pressed={voted} onClick={() => toggleWishVote(wish.id, wish.title)}>
-                          <span aria-hidden="true">{voted ? '✓' : '○'}</span>
-                          <strong>{voted ? '有需求' : '无需求'}</strong>
-                        </button>
+                        <div className="hf-wish-votes" role="group" aria-label={`${wish.title}需求反馈`}>
+                          <button className="is-up" type="button" aria-label={`点赞${wish.title}`} aria-pressed={vote === 'up'} onClick={() => toggleWishVote(wish.id, wish.title, 'up')}><HfIcon name="thumb-up" size={14} /><span>点赞</span></button>
+                          <button className="is-down" type="button" aria-label={`点踩${wish.title}`} aria-pressed={vote === 'down'} onClick={() => toggleWishVote(wish.id, wish.title, 'down')}><HfIcon name="thumb-up" size={14} /><span>点踩</span></button>
+                        </div>
                       </article>
                     )
                   })}
@@ -1070,12 +1085,6 @@ function HighFrequencySurface({
           </div>
         </div>
       </div>
-      {!hideBottomBar && (
-        <div className="hf-bottom-bar">
-          <span><i /> 已选择 {selectedVisibleWorkItems.length} 项{activeFocus}事项，{activeFocusDetail.boundary}</span>
-          <div><button type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`正在将已选 ${selectedVisibleWorkItems.length} 项设为自动执行`)}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" disabled={!selectedVisibleWorkItems.length} onClick={() => notify(`AI 正在按顺序处理已选 ${selectedVisibleWorkItems.length} 项事项`)}><HfIcon name="sparkles" size={15} />AI 一键执行已选 {selectedVisibleWorkItems.length} 项</button></div>
-        </div>
-      )}
     </div>
   )
 }

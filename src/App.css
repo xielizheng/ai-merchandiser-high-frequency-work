@@ -1966,6 +1966,61 @@ button:disabled {
 .hf-legend .is-done { background: #2cad80; }
 .hf-legend .is-active { background: var(--hf-blue); }
 
+.hf-panel-head-side {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hf-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.hf-panel-actions button {
+  min-height: 32px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--hf-line-strong);
+  border-radius: 8px;
+  color: #354052;
+  background: #fff;
+  font-size: 10.5px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 170ms ease, border-color 170ms ease, background-color 170ms ease, box-shadow 170ms ease, transform 170ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hf-panel-actions button:hover:not(:disabled) {
+  border-color: #a9b9a5;
+  color: #294e29;
+  background: #f7f9f5;
+}
+
+.hf-panel-actions button.is-primary {
+  border-color: #c9f05b;
+  color: #17251f;
+  background: #c9f05b;
+  box-shadow: 0 5px 12px rgba(119, 153, 40, 0.14);
+}
+
+.hf-panel-actions button.is-primary:hover:not(:disabled) {
+  border-color: #b7df45;
+  color: #17251f;
+  background: #b7df45;
+}
+
+.hf-panel-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
 .hf-focus-cards {
   padding: 0 16px 17px;
   display: grid;
@@ -3707,8 +3762,12 @@ button:disabled {
   border-left: 1px solid #dfe4dc;
 }
 
-.hf-wish-list > article.is-voted {
+.hf-wish-list > article.is-liked {
   background: #f6faed;
+}
+
+.hf-wish-list > article.is-disliked {
+  background: #fff9f4;
 }
 
 .hf-wish-icon {
@@ -3790,15 +3849,11 @@ button:disabled {
 .hf-wish-pool-side .hf-wish-pool-head {
   align-items: stretch;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
 .hf-wish-pool-side .hf-wish-pool-head > div {
   align-items: flex-start;
-}
-
-.hf-wish-pool-side .hf-wish-pool-head > button {
-  width: 100%;
 }
 
 .hf-wish-pool-side .hf-wish-list {
@@ -3821,12 +3876,54 @@ button:disabled {
   height: 30px;
 }
 
-.hf-wish-pool-side .hf-wish-list article > button {
+.hf-wish-pool-side .hf-wish-votes {
   width: 100%;
-  min-height: 34px;
   grid-column: 2;
-  flex-direction: row;
+}
+
+.hf-wish-votes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.hf-wish-votes button {
+  min-height: 34px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: 5px;
+  border: 1px solid #d4dcd1;
+  border-radius: 8px;
+  color: #6d796f;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.hf-wish-votes button:hover {
+  border-color: #aebbaa;
+  color: #354b3e;
+  background: #f7f9f5;
+}
+
+.hf-wish-votes button.is-up[aria-pressed='true'] {
+  border-color: #9fc75b;
+  color: #355b2b;
+  background: #edf6dc;
+}
+
+.hf-wish-votes button.is-down[aria-pressed='true'] {
+  border-color: #e2b38d;
+  color: #8c4f24;
+  background: #fff0e5;
+}
+
+.hf-wish-votes button.is-down .hf-icon {
+  transform: rotate(180deg);
 }
 
 .hf-bottom-bar button:disabled {
