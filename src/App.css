@@ -3661,3 +3661,539 @@ button:disabled {
     transition: none;
   }
 }
+
+/* Daily report embedded scheme: one product frame, one document scroll, no nested page. */
+.daily-report-shell {
+  color: #252a36;
+  background: #f4f6fb;
+}
+
+.daily-report-shell .center-body {
+  background: #f4f6fb;
+}
+
+.daily-report-shell .center-sidebar {
+  border-color: #e5e8f0;
+  color: #4d5565;
+  background: #fff;
+}
+
+.daily-report-shell .center-sidebar-title {
+  color: #262b38;
+}
+
+.daily-report-shell .center-sidebar-title span {
+  color: #6458f5;
+}
+
+.daily-report-shell .center-sidebar-title button {
+  color: #8c93a2;
+}
+
+.daily-report-shell .center-sidebar-nav button,
+.daily-report-shell .center-sidebar-utility {
+  color: #505867;
+}
+
+.daily-report-shell .center-sidebar-nav button span,
+.daily-report-shell .center-sidebar-utility span {
+  color: #697181;
+}
+
+.daily-report-shell .center-sidebar-nav button:hover,
+.daily-report-shell .center-sidebar-utility:hover {
+  color: #5b50e8;
+  background: #f5f3ff;
+}
+
+.daily-report-shell .center-sidebar-nav button.active {
+  color: #5b50e8;
+  background: #f1efff;
+  box-shadow: inset 0 0 0 1px #ddd7ff;
+}
+
+.daily-report-shell .center-sidebar-nav button.active span {
+  color: #5b50e8;
+}
+
+.daily-report-shell .center-sidebar-divider,
+.daily-report-shell .center-sidebar-history {
+  border-color: #eceef4;
+}
+
+.daily-report-shell .center-sidebar-divider {
+  background: #eceef4;
+}
+
+.daily-report-shell .center-sidebar-group-label,
+.daily-report-shell .center-sidebar-history > span {
+  color: #a1a7b3;
+}
+
+.daily-report-shell .center-sidebar-history button {
+  color: #626a79;
+}
+
+.daily-report-shell .center-sidebar-history button:hover,
+.daily-report-shell .center-sidebar-history button.is-current {
+  color: #5b50e8;
+}
+
+.daily-embed-main {
+  min-width: 0;
+  height: calc(100svh - 58px);
+  padding: 18px 22px 36px;
+  overflow: auto;
+  background: #f4f6fb;
+}
+
+.daily-report-board {
+  min-height: 100%;
+  padding: 0 16px 20px;
+  border: 1px solid #e7e9f0;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(52, 61, 88, 0.045);
+}
+
+.daily-report-header {
+  min-height: 58px;
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.daily-report-title {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.daily-report-title h1 {
+  margin: 0 4px 0 0;
+  color: #372b57;
+  font-size: 23px;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.daily-report-title > span {
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: #626a78;
+  background: #f5f6fa;
+  font-size: 11px;
+}
+
+.daily-report-title > span:first-of-type {
+  color: #b12967;
+  background: #fff1f7;
+}
+
+.daily-report-medals {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.daily-report-medals i {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #6f63ee;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.daily-report-medals i:nth-child(2n) { background: #e34f69; }
+.daily-report-medals i:nth-child(3n) { background: #149d81; }
+
+.daily-report-header > button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e3e6ee;
+  border-radius: 7px;
+  color: #596172;
+  background: #fff;
+  cursor: pointer;
+}
+
+.daily-report-header > button:hover {
+  color: #5b50e8;
+  border-color: #cfc9ff;
+  background: #f8f7ff;
+}
+
+.daily-signal-section {
+  padding: 13px 0 17px;
+  border-top: 1px solid #eef0f4;
+}
+
+.daily-section-head {
+  margin-bottom: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.daily-section-head h2 {
+  margin: 0;
+  color: #2a303c;
+  font-size: 14px;
+}
+
+.daily-section-head > span {
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: #a53e56;
+  background: #fff4f6;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.daily-section-head > span.is-opportunity {
+  color: #337761;
+  background: #eef8f4;
+}
+
+.daily-risk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.daily-signal-card {
+  min-width: 0;
+  min-height: 88px;
+  padding: 13px 14px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  gap: 2px 11px;
+  border: 1px solid #e3e6ed;
+  border-radius: 9px;
+  color: #2c313d;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.daily-signal-card.tone-blue,
+.daily-signal-card.tone-purple {
+  color: #2c313d;
+  background: #fff;
+}
+
+.daily-signal-card:hover {
+  transform: translateY(-1px);
+  border-color: #cfd3df;
+  box-shadow: 0 7px 18px rgba(48, 58, 88, 0.07);
+}
+
+.daily-signal-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  grid-row: 1 / span 2;
+  border-radius: 8px;
+  color: #17979b;
+  background: #eaf8f8;
+}
+
+.daily-signal-card.tone-blue .daily-signal-icon {
+  color: #397bd9;
+  background: #eef5ff;
+}
+
+.daily-signal-card.tone-purple .daily-signal-icon {
+  color: #7b57db;
+  background: #f3efff;
+}
+
+.daily-signal-copy {
+  min-width: 0;
+}
+
+.daily-signal-copy > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.daily-signal-copy strong,
+.daily-opportunity-card strong {
+  color: #252a35;
+  font-size: 12px;
+}
+
+.daily-signal-copy em {
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: #bc3558;
+  background: #fff0f4;
+  font-size: 9px;
+  font-style: normal;
+}
+
+.daily-signal-copy p,
+.daily-opportunity-card p {
+  overflow: hidden;
+  margin: 5px 0 0;
+  color: #6d7482;
+  font-size: 10.5px;
+  line-height: 1.55;
+  text-overflow: ellipsis;
+}
+
+.daily-signal-copy p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.daily-signal-card > b {
+  grid-column: 2;
+  color: #5d6574;
+  font-size: 9.5px;
+  font-weight: 650;
+}
+
+.daily-opportunity-card {
+  width: 100%;
+  min-height: 70px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid #e3e6ed;
+  border-radius: 9px;
+  color: #2c313d;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.daily-opportunity-card .daily-signal-icon {
+  grid-row: auto;
+  color: #2d9b81;
+  background: #eaf8f4;
+}
+
+.daily-opportunity-card p {
+  max-width: 110ch;
+}
+
+.daily-opportunity-card > em {
+  color: #4e43dd;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.daily-high-frequency-section {
+  margin-top: 2px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e8ef;
+}
+
+.daily-high-frequency-head {
+  padding: 0 2px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.daily-high-frequency-head > div {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-hf-symbol {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 9px;
+  color: #5748d8;
+  background: #f0edff;
+}
+
+.daily-high-frequency-head h2 {
+  margin: 0;
+  color: #252a35;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.daily-high-frequency-head p {
+  margin: 4px 0 0;
+  color: #717988;
+  font-size: 10.5px;
+}
+
+.daily-hf-update {
+  padding: 4px 9px;
+  border: 1px solid #dfe3ea;
+  border-radius: 999px;
+  color: #68717e;
+  background: #fafbfc;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.daily-hf-profile {
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #283e34;
+  border-radius: 10px;
+  color: #c6d1cb;
+  background: #15261f;
+}
+
+.daily-hf-profile p {
+  max-width: 72ch;
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+.daily-hf-profile p strong {
+  color: #c9f05b;
+}
+
+.daily-hf-profile > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.daily-hf-profile > div span {
+  padding: 4px 7px;
+  border: 1px solid #3a5046;
+  border-radius: 999px;
+  color: #b4c1ba;
+  background: #1c3027;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.daily-hf-profile > div strong {
+  color: #fff;
+}
+
+.daily-report-high-frequency {
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: hf-workspace;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  background: #eef1eb;
+}
+
+.daily-report-high-frequency .hf-surface {
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.daily-report-high-frequency .hf-scroll-content {
+  overflow: visible;
+}
+
+.daily-report-high-frequency .hf-bottom-bar {
+  position: static;
+}
+
+@media (max-width: 1180px) {
+  .daily-embed-main {
+    padding: 16px 16px 28px;
+  }
+
+  .daily-risk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-hf-profile {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .daily-hf-profile > div {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 780px) {
+  .daily-report-shell .center-sidebar {
+    border-color: #e5e8f0;
+    background: #fff;
+  }
+
+  .daily-report-shell .center-sidebar-utility,
+  .daily-report-shell .center-sidebar-group-label,
+  .daily-report-shell .center-sidebar-history {
+    display: none;
+  }
+
+  .daily-embed-main {
+    height: auto;
+    padding: 12px;
+  }
+
+  .daily-report-board {
+    padding: 0 11px 14px;
+  }
+
+  .daily-report-header,
+  .daily-high-frequency-head,
+  .daily-section-head {
+    align-items: flex-start;
+  }
+
+  .daily-report-header > button,
+  .daily-hf-update {
+    display: none;
+  }
+
+  .daily-opportunity-card {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .daily-opportunity-card > em {
+    grid-column: 2;
+  }
+
+  .daily-high-frequency-head > div {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-signal-card {
+    transition: none;
+  }
+}

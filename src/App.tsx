@@ -368,6 +368,12 @@ function App() {
     return () => window.removeEventListener('popstate', onPop)
   }, [])
 
+  useEffect(() => {
+    document.title = path.includes('/daily-report-embedded')
+      ? '运营日报 · AI 经营中心'
+      : '高频工作 · AI 经营中心'
+  }, [path])
+
   const navigate = (nextPath: string) => {
     const targetPath = window.location.pathname.startsWith(publicSiteBase) ? `${publicSiteBase}${nextPath}` : nextPath
     window.history.pushState({}, '', targetPath)
@@ -404,7 +410,9 @@ function App() {
 
   return (
     <>
-      {path.includes('/daily-execution/local') ? (
+      {path.includes('/daily-report-embedded') ? (
+        <EmbeddedDailyReport navigate={navigate} notify={notify} />
+      ) : path.includes('/daily-execution/local') ? (
         <DailyExecution
           completed={completed}
           executeAll={executeAll}
@@ -916,6 +924,143 @@ function HighFrequencySurface({
       <div className="hf-bottom-bar">
         <span><i /> {activeWorkItems.length} 项{activeFocus}事项已就绪，{activeFocusDetail.boundary}</span>
         <div><button type="button" onClick={() => notify(`正在设置${activeFocus}场景自动执行`)}>设为自动执行 <span aria-hidden="true">→</span></button><button className="is-primary" type="button" onClick={() => notify(`AI 正在准备处理${activeFocus}场景全部事项`)}><HfIcon name="sparkles" size={15} />AI 一键处理全部</button></div>
+      </div>
+    </div>
+  )
+}
+
+function EmbeddedDailyReport({
+  navigate,
+  notify,
+}: {
+  navigate: (path: string) => void
+  notify: (message: string) => void
+}) {
+  const reportRisks: Array<{ icon: HfIconName; title: string; badge: string; desc: string; value: string; tone: string }> = [
+    { icon: 'tag', title: '价高预警', badge: '实时事件', desc: '重点货盘价高商品已持续超过 2 小时，请及时处理，避免影响前台价格心智。', value: '1 个商品待处理', tone: 'cyan' },
+    { icon: 'warehouse', title: '库存巡检', badge: 'AI 巡检', desc: '发现床垫组部分 SKU 库存无货，建议优先核查补货量与上下架状态。', value: '20,845 个 SKU', tone: 'blue' },
+    { icon: 'receipt', title: '商品信息巡检', badge: 'AI 巡检', desc: '当前商品信息均符合品类规范要求，AI 将继续监控异常变更。', value: '0 个异常', tone: 'purple' },
+  ]
+
+  return (
+    <div className="center-shell daily-report-shell">
+      <header className="center-topbar">
+        <div className="center-product">
+          <span className="center-product-mark">采</span>
+          <strong>采销工作台</strong>
+        </div>
+        <div className="center-search"><span>✦</span><span>AI搜索</span><i>京东采销操盘手册：从入门到精通</i></div>
+        <nav className="center-topnav" aria-label="全局导航">
+          <button className="selected" type="button">✦ 经营中心</button>
+          <button type="button">超级运营</button>
+          <button type="button">⌁ 消息</button>
+          <button type="button">▣ 工具箱</button>
+          <button type="button">客户端</button>
+          <button type="button">反馈</button>
+          <span className="center-user">谢理正⌄</span>
+        </nav>
+      </header>
+
+      <div className="center-body">
+        <aside className="center-sidebar">
+          <div className="center-sidebar-title"><span>Ai</span><strong>经营中心</strong><button type="button" aria-label="收起侧栏">◧</button></div>
+          <div className="center-sidebar-nav">
+            {centerNavItems.map((item, index) => (
+              <button
+                className={index === 0 ? 'active' : ''}
+                key={item.label}
+                onClick={() => notify(`${item.label}模块正在建设中`)}
+                type="button"
+              >
+                <span>{item.icon}</span>{item.label}
+              </button>
+            ))}
+          </div>
+          <div className="center-sidebar-divider" />
+          <div className="center-sidebar-group-label">超级工具</div>
+          <button className="center-sidebar-utility" type="button" onClick={() => notify('超级运营模块正在建设中')}><span>⌁</span>超级运营</button>
+          <button className="center-sidebar-utility" type="button" onClick={() => notify('超级大表模块正在建设中')}><span>▤</span>超级大表</button>
+          <button className="center-sidebar-utility" type="button" onClick={() => notify('协同任务模块正在建设中')}><span>♧</span>协同任务</button>
+          <button className="center-sidebar-utility" type="button" onClick={() => navigate('/daily-execution')}><span>✦</span>高频工作</button>
+          <div className="center-sidebar-history">
+            <span>历史记录</span>
+            <button className="is-current" type="button">运营日报</button>
+            <button type="button" onClick={() => notify('正在打开采购价巡检')}>采购价巡检</button>
+            <button type="button" onClick={() => notify('正在打开品类消费趋势')}>品类消费趋势</button>
+            <button type="button" onClick={() => notify('正在打开商品基础信息巡检')}>商品基础信息巡检</button>
+          </div>
+        </aside>
+
+        <main className="daily-embed-main">
+          <section className="daily-report-board" aria-label="运营日报">
+            <header className="daily-report-header">
+              <div className="daily-report-title">
+                <h1>运营日报</h1>
+                <span>2026.7.28</span>
+                <span>已入职 414 天</span>
+                <div className="daily-report-medals" aria-label="工作徽章"><i>价</i><i>品</i><i>采</i><i>营</i><i>数</i><i>商</i></div>
+              </div>
+              <button type="button" onClick={() => notify('日报已切换为全屏展示')} aria-label="全屏展示">↗</button>
+            </header>
+
+            <section className="daily-signal-section" aria-labelledby="risk-heading">
+              <div className="daily-section-head">
+                <h2 id="risk-heading">经营风险</h2>
+                <span>◷ 7×24 小时为您识别经营风险</span>
+              </div>
+              <div className="daily-risk-grid">
+                {reportRisks.map((item) => (
+                  <button className={`daily-signal-card tone-${item.tone}`} key={item.title} type="button" onClick={() => notify(`已打开：${item.title}`)}>
+                    <span className="daily-signal-icon"><HfIcon name={item.icon} size={22} /></span>
+                    <span className="daily-signal-copy">
+                      <span><strong>{item.title}</strong><em>{item.badge}</em></span>
+                      <p>{item.desc}</p>
+                    </span>
+                    <b>{item.value}</b>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="daily-signal-section" aria-labelledby="opportunity-heading">
+              <div className="daily-section-head">
+                <h2 id="opportunity-heading">经营机会</h2>
+                <span className="is-opportunity">行业报告推荐</span>
+              </div>
+              <button className="daily-opportunity-card" type="button" onClick={() => notify('已打开商机情报分析')}>
+                <span className="daily-signal-icon"><HfIcon name="sparkles" size={22} /></span>
+                <span>
+                  <strong>商机情报分析</strong>
+                  <p>顾家深睡阳台专用 2026 年最新款进入热销区间，建议聚焦此价格带、优化商品展示与售后，并针对 36–45 岁人群进行精准营销。</p>
+                </span>
+                <em>查看机会 →</em>
+              </button>
+            </section>
+
+            <section className="daily-high-frequency-section" aria-labelledby="high-frequency-heading">
+              <div className="daily-high-frequency-head">
+                <div>
+                  <span className="daily-hf-symbol"><HfIcon name="sparkles" size={18} /></span>
+                  <div><h2 id="high-frequency-heading">高频工作</h2><p>基于近 7 天操作行为，识别反复出现的采销工作，并在日报中直接处理。</p></div>
+                </div>
+                <span className="daily-hf-update">今日更新 · 10 项</span>
+              </div>
+              <div className="daily-hf-profile">
+                <p><strong>商品 + 营销双核心采销：</strong>商品维护和促销运营占用时间最多，优先推荐高频、耗时集中的动作链路。</p>
+                <div>
+                  <span>商品耗时 <strong>42%</strong></span>
+                  <span>营销耗时 <strong>40%</strong></span>
+                  <span>商家耗时 <strong>9%</strong></span>
+                  <span>7 天 <strong>135 个任务</strong></span>
+                  <span>总动手 <strong>35.5 小时</strong></span>
+                </div>
+              </div>
+              <div className="daily-report-high-frequency">
+                <HighFrequencySurface navigate={navigate} notify={notify} />
+              </div>
+            </section>
+          </section>
+        </main>
       </div>
     </div>
   )
