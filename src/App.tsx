@@ -681,10 +681,12 @@ function HighFrequencySurface({
   hideBottomBar = false,
   navigate,
   notify,
+  suggestionPageSize = 3,
 }: {
   hideBottomBar?: boolean
   navigate: (path: string) => void
   notify: (message: string) => void
+  suggestionPageSize?: number
 }) {
   const [suggestionPage, setSuggestionPage] = useState(1)
   const [activeFocus, setActiveFocus] = useState('商品')
@@ -833,9 +835,8 @@ function HighFrequencySurface({
     { icon: 'tag', title: '价格异常巡检', desc: '汇总站内外价格、历史价和毛利红线，生成需要人工确认的异常清单。', steps: ['查价格', '看价差', '生成清单'], repeat: '7 次', saving: '31.5 分钟' },
     { icon: 'receipt', title: '报价议价确认', desc: '整理供应商新报价与历史供价，生成带目标价和议价话术的确认草稿。', steps: ['查报价', '算差异', '发起确认'], repeat: '4 次', saving: '26.0 分钟' },
   ]
-  const pageSize = 3
-  const visibleSuggestions = suggestions.slice((suggestionPage - 1) * pageSize, suggestionPage * pageSize)
-  const suggestionPages = Math.ceil(suggestions.length / pageSize)
+  const visibleSuggestions = suggestions.slice((suggestionPage - 1) * suggestionPageSize, suggestionPage * suggestionPageSize)
+  const suggestionPages = Math.ceil(suggestions.length / suggestionPageSize)
 
   return (
     <div className="hf-surface">
@@ -1056,7 +1057,7 @@ function EmbeddedDailyReport({
                 <span className="daily-hf-update">今日更新 · 10 项</span>
               </div>
               <div className="daily-report-high-frequency">
-                <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} />
+                <HighFrequencySurface hideBottomBar navigate={navigate} notify={notify} suggestionPageSize={4} />
               </div>
             </section>
           </section>
