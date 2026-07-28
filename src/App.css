@@ -3364,6 +3364,12 @@ button:disabled {
   }
 }
 
+@container hf-workspace (min-width: 621px) {
+  .embedded-workspace .hf-work-skill {
+    margin-left: 34px;
+  }
+}
+
 .hf-action-summary-tools {
   display: flex;
   align-items: center;
