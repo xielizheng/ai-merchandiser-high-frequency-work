@@ -983,12 +983,24 @@ function HighFrequencySurface({
                 return (
                 <article className={`hf-work-group${selected ? ' is-selected' : ''}`} key={item.title}>
                   <button className="hf-work-close" type="button" aria-label={`本次不再显示${item.title}`} title="本次不再显示" onClick={() => hideWorkItem(item.menuPath, item.title)}>×</button>
-                  <div className="hf-work-heading">
+                  <div className="hf-work-primary">
                     <label className="hf-work-select">
                       <input type="checkbox" checked={selected} onChange={() => toggleWorkItem(item.menuPath)} aria-label={`选择${item.title}`} />
                       <span><HfIcon name="check" size={13} /></span>
                     </label>
-                    <div>
+                    <div className="hf-work-skill-copy">
+                      <div className="hf-work-card-head"><span className="hf-work-skill-icon"><HfIcon name="sparkles" size={15} /></span><strong>{item.taskTitle}</strong><em>{item.taskBadge}</em></div>
+                      <p>{item.taskDesc}</p>
+                      <div className="hf-work-card-meta"><span><HfIcon name="users" size={13} /> {item.stats[0]}</span><span><HfIcon name="receipt" size={13} /> {item.stats[1]}</span><span>☆ {item.stats[2]}</span></div>
+                    </div>
+                    <div className="hf-work-actions">
+                      <button className="hf-schedule-action" type="button" onClick={() => notify(`正在设置定时任务：${item.taskTitle}`)}><HfIcon name="clock" size={15} />设置定时任务</button>
+                      <button className="hf-work-action" type="button" onClick={() => notify(`AI 已准备：${item.taskTitle}`)}><HfIcon name="sparkles" size={15} />AI 去操作</button>
+                    </div>
+                  </div>
+                  <div className="hf-work-origin">
+                    <span className="hf-work-origin-label">用户原操作路径</span>
+                    <div className="hf-work-origin-row">
                       <a
                         className="hf-work-heading-title"
                         href={getRouteHref(item.menuPath)}
@@ -1001,19 +1013,8 @@ function HighFrequencySurface({
                         <HfIcon name={item.icon} size={15} /><strong>{item.title}</strong><span aria-hidden="true">↗</span>
                       </a>
                       {activeFocus === '全部' && <em className="hf-work-scene-tag">{item.scene}</em>}
-                      <p>{item.desc}</p>
                     </div>
-                  </div>
-                  <div className="hf-work-skill">
-                    <div className="hf-work-skill-copy">
-                      <div className="hf-work-card-head"><span className="hf-work-skill-icon"><HfIcon name="sparkles" size={15} /></span><strong>{item.taskTitle}</strong><em>{item.taskBadge}</em></div>
-                      <p>{item.taskDesc}</p>
-                      <div className="hf-work-card-meta"><span><HfIcon name="users" size={13} /> {item.stats[0]}</span><span><HfIcon name="receipt" size={13} /> {item.stats[1]}</span><span>☆ {item.stats[2]}</span></div>
-                    </div>
-                    <div className="hf-work-actions">
-                      <button className="hf-schedule-action" type="button" onClick={() => notify(`正在设置定时任务：${item.taskTitle}`)}><HfIcon name="clock" size={15} />设置定时任务</button>
-                      <button className="hf-work-action" type="button" onClick={() => notify(`AI 已准备：${item.taskTitle}`)}><HfIcon name="sparkles" size={15} />AI 去操作</button>
-                    </div>
+                    <p>{item.desc}</p>
                   </div>
                 </article>
                 )
